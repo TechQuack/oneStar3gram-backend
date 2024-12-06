@@ -15,6 +15,8 @@ services:
       retries: 5
     volumes:
       - postgres_data_onestar3gram:/var/lib/postgresql/data
+    networks:
+      - app
 
   backend:
     build:
@@ -24,12 +26,19 @@ services:
       DATABASE_URL: jdbc:postgresql://onestar3gram-postgres:5432/${DATABASE_NAME}?schema=public
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_USER: ${DATABASE_USER}
+      KEYCLOAK_BACKEND_SECRET: ${KEYCLOAK_BACKEND_SECRET}
     depends_on:
       postgres:
         condition: service_healthy
-        restart: true
     ports:
       - "8080:8080"
+    networks:
+      - app
 
 volumes:
   postgres_data_onestar3gram:
+
+networks:
+  app:
+    external: true
+    name: keycloak

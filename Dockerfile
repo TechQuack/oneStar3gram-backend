@@ -4,6 +4,7 @@ COPY ./pom.xml .
 RUN mvn dependency:go-offline
 COPY . .
 RUN mvn clean package -DskipTests
+RUN keytool -importcert -file certs/cert.pem -keystore $JAVA_HOME/lib/security/cacerts -alias "keycloak-onestar3gram" -storepass changeit -trustcacerts -noprompt
 
 FROM amazoncorretto:17-alpine AS prod
 WORKDIR /app
