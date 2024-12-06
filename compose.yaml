@@ -1,0 +1,35 @@
+services:
+  postgres:
+    container_name: onestar3gram-postgres
+    image: 'postgres:latest'
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_USER: ${DATABASE_USER}
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-d', $DATABASE_NAME]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+    volumes:
+      - postgres_data_onestar3gram:/var/lib/postgresql/data
+
+  backend:
+    build:
+      dockerfile: Dockerfile
+      target: dev
+    environment:
+      DATABASE_URL: jdbc:postgresql://onestar3gram-postgres:5432/${DATABASE_NAME}?schema=public
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_USER: ${DATABASE_USER}
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data_onestar3gram:
