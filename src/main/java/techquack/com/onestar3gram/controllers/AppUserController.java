@@ -1,4 +1,4 @@
 package techquack.com.onestar3gram.controllers;
 
-public class UserController {
+public class AppUserController {
 }
