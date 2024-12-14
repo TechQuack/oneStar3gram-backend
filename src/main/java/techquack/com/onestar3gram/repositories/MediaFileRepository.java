@@ -8,4 +8,6 @@ import java.util.List;
 public interface MediaFileRepository extends JpaRepository<MediaFile, Integer> {
 
     List<MediaFile> findBy();
+
+    MediaFile findOneBy(int mediaFileId);
 }
