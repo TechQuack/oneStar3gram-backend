@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import techquack.com.onestar3gram.entities.Comment;
 import techquack.com.onestar3gram.entities.Post;
+import techquack.com.onestar3gram.exceptions.CommentInvalidException;
+import techquack.com.onestar3gram.exceptions.EmptyValueException;
+import techquack.com.onestar3gram.exceptions.PostInvalidException;
 import techquack.com.onestar3gram.repositories.PostRepository;
 import techquack.com.onestar3gram.services.CommentService;
 
@@ -29,41 +32,68 @@ public class CommentController {
     @GetMapping(value="posts/{postId}/comments", produces = "application/json")
     public ResponseEntity<List<Comment>> getPostComments(@PathVariable int postId) {
         Post p = this.postRepository.findOneById(postId);
-        List<Comment> comments = this.commentService.getPostComments(p);
+        List<Comment> comments = null;
+        try {
+            comments = this.commentService.getPostComments(p);
+        } catch (PostInvalidException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.status(comments == null ? HttpStatus.NOT_FOUND : HttpStatus.OK).body(comments);
     }
 
     @GetMapping(value = "comments/{commentId}/post", produces = "application/json")
     public ResponseEntity<Post> getPostFromComment(@PathVariable int commentId) {
         Comment c = this.commentService.getCommentById(commentId);
-        Post p = this.commentService.getPostFromComment(c);
+        Post p = null;
+        try {
+            p = this.commentService.getPostFromComment(c);
+        } catch (CommentInvalidException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.status(p == null ? HttpStatus.NOT_FOUND : HttpStatus.OK).body(p);
     }
 
     @PostMapping(value = "posts/{postId}/comments/value/{value}", produces = "application/json")
     public ResponseEntity<Comment> postComment(@PathVariable int postId, @PathVariable String value) {
-        Comment c = this.commentService.createComment(postRepository.findOneById(postId), value);
+        Comment c = null;
+        try {
+            c = this.commentService.createComment(postRepository.findOneById(postId), value);
+        } catch (EmptyValueException | PostInvalidException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.status(c == null ? HttpStatus.CONFLICT : HttpStatus.CREATED).body(c);
     }
 
     @PutMapping(value = "comments/{commentId}/value/{value}", produces = "application/json")
     public ResponseEntity<Comment> putComment(@PathVariable int commentId, @PathVariable String value) {
         Comment c = this.commentService.getCommentById(commentId);
-        c = this.commentService.updateComment(c, value);
+        try {
+            c = this.commentService.updateComment(c, value);
+        } catch (CommentInvalidException | EmptyValueException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.status(c == null ? HttpStatus.NOT_FOUND : HttpStatus.OK).body(c);
     }
 
     @PutMapping(value = "comments/{commentId}/like", produces = "application/json")
     public ResponseEntity<Comment> putLike(@PathVariable int commentId) {
         Comment c = this.commentService.getCommentById(commentId);
-        this.commentService.likeComment(c);
+        try {
+            this.commentService.likeComment(c);
+        } catch (CommentInvalidException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.status(c == null ? HttpStatus.NOT_FOUND : HttpStatus.OK).body(c);
     }
 
     @DeleteMapping(value = "comments/{commentId}", produces = "application/json")
     public ResponseEntity<Comment> deleteComment(@PathVariable int commentId) {
         Comment c = this.commentService.getCommentById(commentId);
-        this.commentService.deleteComment(c);
+        try {
+            this.commentService.deleteComment(c);
+        } catch (CommentInvalidException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.status(c == null ? HttpStatus.NOT_FOUND : HttpStatus.OK).body(c);
     }
 }

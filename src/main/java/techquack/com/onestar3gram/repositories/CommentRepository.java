@@ -9,5 +9,5 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
     List<Comment> findBy();
 
-    Comment findByOneId(int commentId);
+    Comment findOneById(int commentId);
 }
