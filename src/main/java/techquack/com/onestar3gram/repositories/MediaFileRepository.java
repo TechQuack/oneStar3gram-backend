@@ -9,5 +9,7 @@ public interface MediaFileRepository extends JpaRepository<MediaFile, Integer> {
 
     List<MediaFile> findBy();
 
-    MediaFile findOneBy(int mediaFileId);
+    MediaFile findOneById(int mediaFileId);
+
+    List<MediaFile> findByIsVideo(boolean isVideo);
 }

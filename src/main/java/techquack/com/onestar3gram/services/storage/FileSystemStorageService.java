@@ -10,7 +10,6 @@ import techquack.com.onestar3gram.exceptions.FileNotFoundException;
 import techquack.com.onestar3gram.exceptions.StorageException;
 import techquack.com.onestar3gram.repositories.MediaFileRepository;
 
-import javax.print.attribute.standard.Media;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,15 +27,14 @@ public class FileSystemStorageService implements StorageService {
 
     private final Path rootLocation;
 
-    @Autowired
-    private MediaFileRepository mediaFileRepository;
+    private final MediaFileRepository mediaFileRepository;
 
     @Autowired
-    public FileSystemStorageService(StorageProperties properties) throws StorageException {
+    public FileSystemStorageService(StorageProperties properties, MediaFileRepository mediaFileRepository) throws StorageException {
         if(properties.getLocation().trim().isEmpty()){
             throw new StorageException("File upload location can not be Empty.");
         }
-
+        this.mediaFileRepository = mediaFileRepository;
         this.rootLocation = Paths.get(properties.getLocation());
     }
 
@@ -44,29 +43,42 @@ public class FileSystemStorageService implements StorageService {
     }
 
     public boolean isValidVideo(MultipartFile file) {
-        throw new NotImplementedException(); //TODO
+        return true; //TODO
     }
 
-    public String getFileOriginalName(int id) throws FileNotFoundException {
-        MediaFile mediaFile = mediaFileRepository.findOneBy(id);
+    public MediaFile getMediaFile(int id) throws FileNotFoundException {
+        MediaFile mediaFile = mediaFileRepository.findOneById(id);
         if(mediaFile == null) {
             throw new FileNotFoundException("This file id does not exist");
         }
-        return mediaFile.getOriginName();
+        return mediaFile;
     }
 
-    public MediaFile getFile(int id) {
-        return mediaFileRepository.findOneBy(id);
+    public File getFile(int id) {
+        MediaFile mediaFile = mediaFileRepository.findOneById(id);
+        return new File(String.valueOf(
+                this.rootLocation.resolve(Paths.get(mediaFile.getGeneratedName())))
+        );
+    }
+
+    public List<MediaFile> getAllVideos() {
+        return mediaFileRepository.findByIsVideo(true);
+    }
+
+    public List<MediaFile> getAllImages() {
+        return mediaFileRepository.findByIsVideo(false);
     }
 
     public MediaFile storeVideo(MultipartFile video) throws StorageException {
-        String newName = generateFileName();
+        String filename = video.getOriginalFilename();
+        String newName = generateFileName() + "." + filename.substring(filename.lastIndexOf(".") + 1);
         storeFile(video, newName);
         return createMediaFile(video, true, newName);
     }
 
     public MediaFile storeImage(MultipartFile image) throws StorageException {
-        String newName = generateFileName();
+        String filename = image.getOriginalFilename();
+        String newName = generateFileName() + "." + filename.substring(filename.lastIndexOf(".") + 1);
         storeFile(image, newName);
         return createMediaFile(image, false, newName);
     }
@@ -88,6 +100,10 @@ public class FileSystemStorageService implements StorageService {
         try {
             if (file.isEmpty()) {
                 throw new StorageException("Failed to store empty file.");
+            }
+            Path uploadDirectory = this.rootLocation.normalize().toAbsolutePath();
+            if (!Files.exists(uploadDirectory)) {
+                Files.createDirectory(uploadDirectory);
             }
             Path destinationFile = this.rootLocation.resolve(
                             Paths.get(newName))
