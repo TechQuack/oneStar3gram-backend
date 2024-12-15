@@ -6,12 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import techquack.com.onestar3gram.entities.Comment;
 import techquack.com.onestar3gram.entities.Post;
-import techquack.com.onestar3gram.exceptions.CommentInvalidException;
-import techquack.com.onestar3gram.exceptions.EmptyValueException;
-import techquack.com.onestar3gram.exceptions.PostInvalidException;
+import techquack.com.onestar3gram.exceptions.comment.CommentInvalidException;
+import techquack.com.onestar3gram.exceptions.utils.EmptyException;
+import techquack.com.onestar3gram.exceptions.post.PostInvalidException;
 import techquack.com.onestar3gram.repositories.PostRepository;
 import techquack.com.onestar3gram.services.CommentService;
-
 import java.util.List;
 
 @RestController
@@ -58,7 +57,7 @@ public class CommentController {
         Comment c = null;
         try {
             c = this.commentService.createComment(postRepository.findOneById(postId), value);
-        } catch (EmptyValueException | PostInvalidException e) {
+        } catch (EmptyException | PostInvalidException e) {
             throw new RuntimeException(e);
         }
         return ResponseEntity.status(c == null ? HttpStatus.CONFLICT : HttpStatus.CREATED).body(c);
@@ -69,7 +68,7 @@ public class CommentController {
         Comment c = this.commentService.getCommentById(commentId);
         try {
             c = this.commentService.updateComment(c, value);
-        } catch (CommentInvalidException | EmptyValueException e) {
+        } catch (CommentInvalidException | EmptyException e) {
             throw new RuntimeException(e);
         }
         return ResponseEntity.status(c == null ? HttpStatus.NOT_FOUND : HttpStatus.OK).body(c);

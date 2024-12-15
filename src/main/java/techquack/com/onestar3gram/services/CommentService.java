@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import techquack.com.onestar3gram.entities.Comment;
 import techquack.com.onestar3gram.entities.Post;
-import techquack.com.onestar3gram.exceptions.CommentInvalidException;
-import techquack.com.onestar3gram.exceptions.EmptyValueException;
-import techquack.com.onestar3gram.exceptions.PostInvalidException;
+import techquack.com.onestar3gram.exceptions.comment.CommentInvalidException;
+import techquack.com.onestar3gram.exceptions.utils.EmptyException;
+import techquack.com.onestar3gram.exceptions.post.PostInvalidException;
 import techquack.com.onestar3gram.repositories.CommentRepository;
 import java.util.List;
 
@@ -35,13 +35,13 @@ public class CommentService {
         return comment.getPost();
     }
 
-    public Comment createComment(Post post, String value) throws EmptyValueException, PostInvalidException {
+    public Comment createComment(Post post, String value) throws EmptyException, PostInvalidException {
         if (post == null) {
             throw new PostInvalidException();
         }
 
         if (value == null || value.isEmpty()) {
-            throw new EmptyValueException();
+            throw new EmptyException();
         }
 
         Comment c = new Comment();
@@ -52,12 +52,12 @@ public class CommentService {
         return c;
     }
 
-    public Comment updateComment(Comment comment, String value) throws CommentInvalidException, EmptyValueException {
+    public Comment updateComment(Comment comment, String value) throws CommentInvalidException, EmptyException {
         if (comment == null) {
             throw new CommentInvalidException();
         }
         if (value == null || value.isEmpty()) {
-            throw new EmptyValueException();
+            throw new EmptyException();
         }
         comment.setValue(value);
         this.commentRepository.save(comment);
