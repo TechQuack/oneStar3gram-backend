@@ -37,4 +37,9 @@ public class PostService {
         postRepository.save(post);
         return post;
     }
+
+    public boolean isPostVisible(Integer id) throws PostNotFoundException {
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + id));
+        return post.isPrivate();
+    }
 }
