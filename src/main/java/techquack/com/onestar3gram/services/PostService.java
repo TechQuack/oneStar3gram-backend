@@ -42,4 +42,12 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + id));
         return post.isPrivate();
     }
+
+    public boolean isTitleValid(String title) {
+        return title != null && title.length() >= 3 && title.length() <= 100;
+    }
+
+    public boolean isDescriptionValid(String description) {
+        return description == null || description.length() <= 500;
+    }
 }
