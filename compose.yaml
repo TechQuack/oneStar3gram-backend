@@ -19,6 +19,7 @@ services:
       - app
 
   backend:
+    container_name: backend_onestar3gram
     build:
       dockerfile: Dockerfile
       target: dev
@@ -31,7 +32,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      - "8080"
     networks:
       - app
 
