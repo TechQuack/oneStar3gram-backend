@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import techquack.com.onestar3gram.entities.AppUser;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
+import techquack.com.onestar3gram.exceptions.PostNotFoundException;
 import techquack.com.onestar3gram.repositories.PostRepository;
 
 @Service
@@ -26,5 +27,14 @@ public class PostService {
         post.setCreator(creator);
         postRepository.save(post);
         return post.getId();
+    }
+
+    public Post updatePost(Integer id, String alt, String description, boolean visibility) throws PostNotFoundException {
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + id));
+        post.setAlt(alt);
+        post.setDescription(description);
+        post.setPrivate(visibility);
+        postRepository.save(post);
+        return post;
     }
 }
