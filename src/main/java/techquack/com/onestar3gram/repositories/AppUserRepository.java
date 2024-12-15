@@ -10,7 +10,7 @@ public interface AppUserRepository extends JpaRepository<AppUser, Integer> {
 
     List<AppUser> findBy();
 
-    Optional<AppUser> findByKeycloakId(String keycloakId);
+    Optional<AppUser> findByEmail(String email);
 
     Optional<AppUser> findByUsername(String username);
 }
