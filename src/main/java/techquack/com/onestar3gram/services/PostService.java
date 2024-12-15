@@ -8,6 +8,7 @@ import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.PostNotFoundException;
 import techquack.com.onestar3gram.repositories.PostRepository;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -35,6 +36,7 @@ public class PostService {
         post.setDescription(description);
         post.setPrivate(visibility);
         post.setCreator(creator);
+        post.setPostDate(new Date());
         postRepository.save(post);
         return post.getId();
     }
