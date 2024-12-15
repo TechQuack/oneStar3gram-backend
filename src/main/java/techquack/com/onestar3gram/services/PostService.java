@@ -8,6 +8,8 @@ import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.PostNotFoundException;
 import techquack.com.onestar3gram.repositories.PostRepository;
 
+import java.util.List;
+
 @Service
 public class PostService {
 
@@ -16,6 +18,14 @@ public class PostService {
     @Autowired
     public PostService(PostRepository postRepository) {
         this.postRepository = postRepository;
+    }
+
+    public Post getPost(Integer id) throws PostNotFoundException {
+        return postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + id));
+    }
+
+    public List<Post> getAllPosts() {
+        return postRepository.findAll();
     }
 
     public Integer createPost(MediaFile media, String alt, String description, boolean visibility, AppUser creator) {
@@ -36,6 +46,10 @@ public class PostService {
         post.setPrivate(visibility);
         postRepository.save(post);
         return post;
+    }
+
+    public void deletePost(Integer id) {
+        postRepository.deleteById(id);
     }
 
     public boolean isPostVisible(Integer id) throws PostNotFoundException {
