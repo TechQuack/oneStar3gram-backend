@@ -1,8 +1,6 @@
 package techquack.com.onestar3gram.services.storage;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.tika.Tika;
-import org.apache.tika.mime.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -40,8 +38,10 @@ public class FileSystemStorageService implements StorageService {
         this.rootLocation = Paths.get(properties.getLocation());
     }
 
-    public boolean isValidImage(MultipartFile file) {
-        return true; //TODO
+    public boolean isValidImage(MultipartFile file) throws IOException {
+        Tika tika = new Tika();
+        String fileTypeDefault = tika.detect(file.getInputStream());
+        return fileTypeDefault.substring(0, fileTypeDefault.indexOf('/')).equals("image");
     }
 
     public boolean isValidVideo(MultipartFile file) throws IOException {
