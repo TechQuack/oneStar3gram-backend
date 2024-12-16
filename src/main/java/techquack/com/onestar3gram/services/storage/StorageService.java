@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface StorageService {
 
-    boolean isValidImage(MultipartFile file);
+    boolean isValidImage(MultipartFile file) throws  IOException;
 
     boolean isValidVideo(MultipartFile file) throws IOException;
 
