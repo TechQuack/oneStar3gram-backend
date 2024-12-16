@@ -30,6 +30,14 @@ public class PostService {
         return postRepository.findAll();
     }
 
+    public List<Post> getPublicPosts() {
+        return postRepository.findAll().stream().filter((p) -> !p.isPrivate()).toList();
+    }
+
+    public List<Post> getPrivatePosts() {
+        return postRepository.findAll().stream().filter(Post::isPrivate).toList();
+    }
+
     public Integer createPost(MediaFile media, String alt, String description, boolean visibility, AppUser creator) {
         Post post = new Post();
         post.setMedia(media);
