@@ -1,6 +1,5 @@
 package techquack.com.onestar3gram.services.storage;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
     public boolean isValidImage(MultipartFile file) {
-        throw new NotImplementedException(); //TODO
+        return true; //TODO
     }
 
     public boolean isValidVideo(MultipartFile file) {
