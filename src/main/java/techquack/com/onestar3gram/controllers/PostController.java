@@ -6,6 +6,7 @@ import techquack.com.onestar3gram.entities.AppUser;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.InvalidDescriptionException;
+import techquack.com.onestar3gram.exceptions.NegativeLikeNumberException;
 import techquack.com.onestar3gram.exceptions.PostNotFoundException;
 import techquack.com.onestar3gram.services.PostService;
 
@@ -48,7 +49,18 @@ public class PostController {
     }
 
     @DeleteMapping(value = "/delete/{id}", produces = "application/json")
-    public @ResponseBody void deletePost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException {
+    public @ResponseBody void deletePost(@PathVariable(value = "id") Integer postId) {
         postService.deletePost(postId);
     }
+
+    @PutMapping(value = "/like/add/{id}", produces = "application/json")
+    public @ResponseBody Post likePost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException {
+        return postService.addLike(postId);
+    }
+
+    @PutMapping(value = "/like/remove/{id}", produces = "application/json")
+    public @ResponseBody Post unlikePost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException, NegativeLikeNumberException {
+        return postService.removeLike(postId);
+    }
+
 }
