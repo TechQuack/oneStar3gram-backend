@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import techquack.com.onestar3gram.entities.AppUser;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
+import techquack.com.onestar3gram.exceptions.NegativeLikeNumberException;
 import techquack.com.onestar3gram.exceptions.PostNotFoundException;
 import techquack.com.onestar3gram.repositories.PostRepository;
 
@@ -21,8 +22,8 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public Post getPost(Integer id) throws PostNotFoundException {
-        return postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + id));
+    public Post getPost(Integer postId) throws PostNotFoundException {
+        return postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
     }
 
     public List<Post> getAllPosts() {
@@ -41,8 +42,8 @@ public class PostService {
         return post.getId();
     }
 
-    public Post updatePost(Integer id, String alt, String description, boolean visibility) throws PostNotFoundException {
-        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + id));
+    public Post updatePost(Integer postId, String alt, String description, boolean visibility) throws PostNotFoundException {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
         post.setAlt(alt);
         post.setDescription(description);
         post.setPrivate(visibility);
@@ -50,12 +51,12 @@ public class PostService {
         return post;
     }
 
-    public void deletePost(Integer id) {
-        postRepository.deleteById(id);
+    public void deletePost(Integer postId) {
+        postRepository.deleteById(postId);
     }
 
-    public boolean isPostVisible(Integer id) throws PostNotFoundException {
-        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + id));
+    public boolean isPostVisible(Integer postId) throws PostNotFoundException {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
         return post.isPrivate();
     }
 
@@ -65,5 +66,18 @@ public class PostService {
 
     public boolean isDescriptionValid(String description) {
         return description == null || description.length() <= 500;
+    }
+
+    public void addLike(Integer postId) throws PostNotFoundException {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
+        post.setLikes(post.getLikes() + 1);
+    }
+
+    public void removeLike(Integer postId) throws PostNotFoundException, NegativeLikeNumberException {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
+        if (post.getLikes() == 0) {
+            throw new NegativeLikeNumberException("error - impossible to have negative like number");
+        }
+        post.setLikes(post.getLikes() - 1);
     }
 }
