@@ -17,7 +17,11 @@ public class CommentService {
     CommentRepository commentRepository;
 
     public Comment getCommentById(int id) {
-        return this.commentRepository.findOneById(id);
+        Comment c = this.commentRepository.findOneById(id);
+        if (c == null) {
+            throw new CommentInvalidException();
+        }
+        return c;
     }
 
     public List<Comment> getPostComments(Post post) throws PostInvalidException {
