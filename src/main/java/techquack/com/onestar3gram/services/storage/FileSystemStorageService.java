@@ -1,6 +1,8 @@
 package techquack.com.onestar3gram.services.storage;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.tika.Tika;
+import org.apache.tika.mime.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -42,8 +44,10 @@ public class FileSystemStorageService implements StorageService {
         throw new NotImplementedException(); //TODO
     }
 
-    public boolean isValidVideo(MultipartFile file) {
-        return true; //TODO
+    public boolean isValidVideo(MultipartFile file) throws IOException {
+        Tika tika = new Tika();
+        String fileTypeDefault = tika.detect(file.getInputStream());
+        return fileTypeDefault.substring(0, fileTypeDefault.indexOf('/')).equals("video");
     }
 
     public MediaFile getMediaFile(int id) throws FileNotFoundException {
@@ -81,6 +85,13 @@ public class FileSystemStorageService implements StorageService {
         String newName = generateFileName() + "." + filename.substring(filename.lastIndexOf(".") + 1);
         storeFile(image, newName);
         return createMediaFile(image, false, newName);
+    }
+
+    public void deleteFile(int id) throws FileNotFoundException {
+        if (!mediaFileRepository.existsById(id)) {
+            throw new FileNotFoundException("File not found");
+        }
+        mediaFileRepository.deleteById(id);
     }
 
    private String generateFileName() {

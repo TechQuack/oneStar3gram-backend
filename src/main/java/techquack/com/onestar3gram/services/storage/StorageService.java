@@ -6,13 +6,14 @@ import techquack.com.onestar3gram.exceptions.FileNotFoundException;
 import techquack.com.onestar3gram.exceptions.StorageException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public interface StorageService {
 
     boolean isValidImage(MultipartFile file);
 
-    boolean isValidVideo(MultipartFile file);
+    boolean isValidVideo(MultipartFile file) throws IOException;
 
     MediaFile getMediaFile(int id) throws FileNotFoundException;
 
@@ -24,4 +25,6 @@ public interface StorageService {
 
     MediaFile storeImage(MultipartFile file) throws StorageException;
     MediaFile storeVideo(MultipartFile file) throws StorageException;
+
+    void deleteFile(int id) throws FileNotFoundException;
 }

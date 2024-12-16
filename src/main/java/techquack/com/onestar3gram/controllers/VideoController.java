@@ -53,10 +53,15 @@ public class VideoController {
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public MediaFile uploadVideo(@RequestParam("file") MultipartFile file) throws StorageException {
+    public MediaFile uploadVideo(@RequestParam("file") MultipartFile file) throws StorageException, IOException {
         if (!storageService.isValidVideo(file)) {
             throw new StorageException("Invalid video");
         }
         return storageService.storeVideo(file);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public void uploadVideo(@PathVariable int id) throws FileNotFoundException {
+        storageService.deleteFile(id);
     }
 }
