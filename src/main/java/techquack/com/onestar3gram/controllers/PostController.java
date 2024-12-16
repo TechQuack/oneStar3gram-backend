@@ -9,6 +9,8 @@ import techquack.com.onestar3gram.exceptions.InvalidDescriptionException;
 import techquack.com.onestar3gram.exceptions.NegativeLikeNumberException;
 import techquack.com.onestar3gram.exceptions.PostNotFoundException;
 import techquack.com.onestar3gram.services.PostService;
+import techquack.com.onestar3gram.services.storage.FileSystemStorageService;
+import techquack.com.onestar3gram.services.storage.StorageService;
 
 import java.util.List;
 
@@ -33,7 +35,9 @@ public class PostController {
     }
 
     @PostMapping(value = "/send", produces = "application/json")
-    public @ResponseBody Integer sendPost(@RequestBody MediaFile media, @RequestBody String alt, @RequestBody String description, @RequestBody boolean visibility, @RequestBody AppUser creator) throws InvalidDescriptionException {
+    public @ResponseBody Integer sendPost(@RequestBody MediaFile media, @RequestParam("alt") String alt,
+                                          @RequestParam("description") String description, @RequestParam("visibility") boolean visibility,
+                                          @RequestBody AppUser creator) throws InvalidDescriptionException {
         if (postService.isDescriptionInvalid(description)) {
             throw new InvalidDescriptionException("Too Long Text - must be less than 500 characters");
         }
