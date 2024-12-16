@@ -15,4 +15,5 @@ ENTRYPOINT ["java","-war","/app/app.war"]
 FROM build AS dev
 WORKDIR /app
 COPY . .
+RUN keytool -importcert -noprompt -trustcacerts -alias proxy-onestar3gram -file certs/cert.pem -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit
 ENTRYPOINT mvn spring-boot:run
