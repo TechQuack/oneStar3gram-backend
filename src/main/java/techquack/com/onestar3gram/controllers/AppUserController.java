@@ -1,6 +1,5 @@
 package techquack.com.onestar3gram.controllers;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -52,9 +51,9 @@ public class AppUserController {
         return ResponseEntity.ok(user);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.PUT, value = "/update")
     public ResponseEntity<AppUser> updateUser(@AuthenticationPrincipal OAuth2User principal,
-                                              AppUser newUser) throws NotLoggedInException, EmailAlreadyTakenException, UsernameAlreadyTakenException {
+                                               AppUser newUser) throws NotLoggedInException, EmailAlreadyTakenException, UsernameAlreadyTakenException {
         AppUser user = service.getUser(principal);
         if (user == null) {
             throw new NotLoggedInException();
@@ -68,5 +67,15 @@ public class AppUserController {
         }
         service.updateUser(user, newUser);
         return ResponseEntity.ok(newUser);
+    }
+
+    @DeleteMapping(value = "/delete/{id}")
+    public ResponseEntity<AppUser> deleteUser (@PathVariable int id) throws UserNotFoundException {
+        AppUser user = service.getUserById(id);
+        if (user == null) {
+            throw new UserNotFoundException(id);
+        }
+        service.deleteUser(user);
+        return ResponseEntity.ok(user);
     }
 }

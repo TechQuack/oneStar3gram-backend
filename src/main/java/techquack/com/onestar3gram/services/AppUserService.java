@@ -6,6 +6,7 @@ import techquack.com.onestar3gram.entities.AppUser;
 import techquack.com.onestar3gram.repositories.AppUserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AppUserService {
@@ -33,15 +34,13 @@ public class AppUserService {
     }
 
     public boolean canChangeEmail(AppUser user, AppUser newUser) {
-        String oldEmail = user.getEmail();
-        String newEmail = newUser.getEmail();
-        return oldEmail.equals(newEmail) || appUserRepository.findByEmail(newEmail).isEmpty();
+        Optional<AppUser> optionalAppUser = appUserRepository.findByEmail(newUser.getEmail());
+        return optionalAppUser.isEmpty() ||  optionalAppUser.get().getKeyCloakId().equals(user.getKeyCloakId());
     }
 
     public boolean canChangeUsername(AppUser user, AppUser newUser) {
-        String oldUsername = user.getUsername();
-        String newUsername = newUser.getUsername();
-        return oldUsername.equals(newUsername) || appUserRepository.findByUsername(newUsername).isEmpty();
+        Optional<AppUser> optionalAppUser = appUserRepository.findByUsername(newUser.getUsername());
+        return optionalAppUser.isEmpty() ||  optionalAppUser.get().getKeyCloakId().equals(user.getKeyCloakId());
     }
 
 
@@ -49,7 +48,7 @@ public class AppUserService {
         AppUser newUser = new AppUser();
         newUser.setEmail(user.getAttribute("email"));
         newUser.setUsername(user.getAttribute("preferred_username"));
-
+        newUser.setKeyCloakId(user.getAttribute("sub"));
         String firstName = user.getAttribute("given_name");
         if (!firstName.isEmpty()) {
             newUser.setFirstName(firstName);
@@ -64,10 +63,14 @@ public class AppUserService {
 
 
     public void updateUser(AppUser user, AppUser newUser) {
-        newUser.setLastName(user.getLastName());
-        newUser.setUsername(user.getUsername());
-        newUser.setEmail(user.getEmail());
-        newUser.setFirstName(user.getFirstName());
-        appUserRepository.save(newUser);
+        user.setLastName(newUser.getLastName());
+        user.setUsername(newUser.getUsername());
+        user.setEmail(newUser.getEmail());
+        user.setFirstName(newUser.getFirstName());
+        appUserRepository.save(user);
+    }
+
+    public void deleteUser(AppUser user) {
+        appUserRepository.delete(user);
     }
 }
