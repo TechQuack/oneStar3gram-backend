@@ -23,7 +23,7 @@ public class PostController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public @ResponseBody Post getPost(@PathVariable Integer id) throws PostNotFoundException {
+    public @ResponseBody Post getPost(@PathVariable(value = "id") Integer id) throws PostNotFoundException {
         return postService.getPost(id);
     }
 
@@ -38,5 +38,13 @@ public class PostController {
             throw new InvalidDescriptionException("Too Long Text - must be less than 500 characters");
         }
         return postService.createPost(media, alt, description, visibility, creator);
+    }
+
+    @PutMapping(value = "/edit/{id}", produces = "application/json")
+    public @ResponseBody Post editPost(@PathVariable(value = "id") Integer postId, @RequestBody String alt, @RequestBody String description, @RequestBody boolean visibility) throws InvalidDescriptionException, PostNotFoundException {
+        if (!postService.isDescriptionValid(description)) {
+            throw new InvalidDescriptionException("Too Long Text - must be less than 500 characters");
+        }
+        return postService.updatePost(postId, alt, description, visibility);
     }
 }
