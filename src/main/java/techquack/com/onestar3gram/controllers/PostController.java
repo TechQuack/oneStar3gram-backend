@@ -1,6 +1,5 @@
 package techquack.com.onestar3gram.controllers;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import techquack.com.onestar3gram.entities.AppUser;
@@ -23,8 +22,8 @@ public class PostController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public @ResponseBody Post getPost(@PathVariable(value = "id") Integer id) throws PostNotFoundException {
-        return postService.getPost(id);
+    public @ResponseBody Post getPost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException {
+        return postService.getPost(postId);
     }
 
     @GetMapping(value = "", produces = "application/json")
@@ -34,7 +33,7 @@ public class PostController {
 
     @PostMapping(value = "/send", produces = "application/json")
     public @ResponseBody Integer sendPost(@RequestBody MediaFile media, @RequestBody String alt, @RequestBody String description, @RequestBody boolean visibility, @RequestBody AppUser creator) throws InvalidDescriptionException {
-        if (!postService.isDescriptionValid(description)) {
+        if (postService.isDescriptionInvalid(description)) {
             throw new InvalidDescriptionException("Too Long Text - must be less than 500 characters");
         }
         return postService.createPost(media, alt, description, visibility, creator);
@@ -42,9 +41,14 @@ public class PostController {
 
     @PutMapping(value = "/edit/{id}", produces = "application/json")
     public @ResponseBody Post editPost(@PathVariable(value = "id") Integer postId, @RequestBody String alt, @RequestBody String description, @RequestBody boolean visibility) throws InvalidDescriptionException, PostNotFoundException {
-        if (!postService.isDescriptionValid(description)) {
+        if (postService.isDescriptionInvalid(description)) {
             throw new InvalidDescriptionException("Too Long Text - must be less than 500 characters");
         }
         return postService.updatePost(postId, alt, description, visibility);
+    }
+
+    @DeleteMapping(value = "/delete/{id}", produces = "application/json")
+    public @ResponseBody void deletePost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException {
+        postService.deletePost(postId);
     }
 }

@@ -60,8 +60,8 @@ public class PostService {
         return post.isPrivate();
     }
 
-    public boolean isDescriptionValid(String description) {
-        return description == null || description.length() <= 500;
+    public boolean isDescriptionInvalid(String description) {
+        return description != null && description.length() > 500;
     }
 
     public void addLike(Integer postId) throws PostNotFoundException {
