@@ -1,13 +1,12 @@
 package techquack.com.onestar3gram.controllers;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.web.bind.annotation.*;
 import techquack.com.onestar3gram.entities.AppUser;
-import techquack.com.onestar3gram.exceptions.UserNotFoundException;
-import techquack.com.onestar3gram.exceptions.UsernameNotFoundException;
+import techquack.com.onestar3gram.exceptions.*;
 import techquack.com.onestar3gram.services.AppUserService;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public class AppUserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AppUser> getUser(@PathVariable Integer id) {
+    public ResponseEntity<AppUser> getUser(@PathVariable Integer id) throws UserNotFoundException {
         AppUser user = service.getUserById(id);
         if (user == null) {
             throw new UserNotFoundException(id);
@@ -31,7 +30,7 @@ public class AppUserController {
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<AppUser> getUserByUsername(@PathVariable String username) {
+    public ResponseEntity<AppUser> getUserByUsername(@PathVariable String username) throws UsernameNotFoundException {
         AppUser user = service.getUserByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException(username);
@@ -42,5 +41,32 @@ public class AppUserController {
     @GetMapping("/all")
     public ResponseEntity<List<AppUser>> getUsers() {
         return ResponseEntity.ok(service.getUsers());
+    }
+
+    @GetMapping("/self")
+    public ResponseEntity<AppUser> getSelf(@AuthenticationPrincipal OAuth2User principal) throws NotLoggedInException {
+        AppUser user = service.getUser(principal);
+        if (user == null) {
+            throw new NotLoggedInException();
+        }
+        return ResponseEntity.ok(user);
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AppUser> updateUser(@AuthenticationPrincipal OAuth2User principal,
+                                              AppUser newUser) throws NotLoggedInException, EmailAlreadyTakenException, UsernameAlreadyTakenException {
+        AppUser user = service.getUser(principal);
+        if (user == null) {
+            throw new NotLoggedInException();
+        }
+        if(!service.canChangeEmail(user, newUser)) {
+            throw new EmailAlreadyTakenException(newUser.getEmail());
+        }
+
+        if(!service.canChangeUsername(user, newUser)) {
+            throw new UsernameAlreadyTakenException(newUser.getUsername());
+        }
+        service.updateUser(user, newUser);
+        return ResponseEntity.ok(newUser);
     }
 }

@@ -28,13 +28,27 @@ public class AppUserService {
         return appUserRepository.findBy();
     }
 
+    public AppUser getUser(OAuth2User oAuth2User) {
+        return appUserRepository.findByEmail(oAuth2User.getAttribute(("email"))).orElse(null);
+    }
+
+    public boolean canChangeEmail(AppUser user, AppUser newUser) {
+        String oldEmail = user.getEmail();
+        String newEmail = newUser.getEmail();
+        return oldEmail.equals(newEmail) || appUserRepository.findByEmail(newEmail).isEmpty();
+    }
+
+    public boolean canChangeUsername(AppUser user, AppUser newUser) {
+        String oldUsername = user.getUsername();
+        String newUsername = newUser.getUsername();
+        return oldUsername.equals(newUsername) || appUserRepository.findByUsername(newUsername).isEmpty();
+    }
+
+
     public void createUser(OAuth2User user) {
         AppUser newUser = new AppUser();
         newUser.setEmail(user.getAttribute("email"));
-        String username = user.getAttribute("preferred_username");
-        if (!username.isEmpty()) {
-            newUser.setUsername(username);
-        }
+        newUser.setUsername(user.getAttribute("preferred_username"));
 
         String firstName = user.getAttribute("given_name");
         if (!firstName.isEmpty()) {
@@ -47,4 +61,13 @@ public class AppUserService {
         }
         appUserRepository.save(newUser);
     }
- }
+
+
+    public void updateUser(AppUser user, AppUser newUser) {
+        newUser.setLastName(user.getLastName());
+        newUser.setUsername(user.getUsername());
+        newUser.setEmail(user.getEmail());
+        newUser.setFirstName(user.getFirstName());
+        appUserRepository.save(newUser);
+    }
+}
