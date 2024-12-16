@@ -41,7 +41,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
     public boolean isValidImage(MultipartFile file) {
-        throw new NotImplementedException(); //TODO
+        return true; //TODO
     }
 
     public boolean isValidVideo(MultipartFile file) throws IOException {
