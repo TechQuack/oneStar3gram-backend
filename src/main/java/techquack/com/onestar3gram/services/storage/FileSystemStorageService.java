@@ -90,7 +90,7 @@ public class FileSystemStorageService implements StorageService {
     private MediaFile createMediaFile(MultipartFile file, boolean isVideo, String newName) {
         MediaFile newMediaFile = new MediaFile();
         newMediaFile.setGeneratedName(newName);
-        newMediaFile.setOriginName(file.getName());
+        newMediaFile.setOriginName(file.getOriginalFilename());
         newMediaFile.setVideo(isVideo);
         mediaFileRepository.save(newMediaFile);
         return newMediaFile;
