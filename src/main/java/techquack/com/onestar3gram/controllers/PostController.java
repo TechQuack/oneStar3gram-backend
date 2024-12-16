@@ -32,5 +32,11 @@ public class PostController {
         return postService.getAllPosts();
     }
 
-
+    @PostMapping(value = "/send", produces = "application/json")
+    public @ResponseBody Integer sendPost(@RequestBody MediaFile media, @RequestBody String alt, @RequestBody String description, @RequestBody boolean visibility, @RequestBody AppUser creator) throws InvalidDescriptionException {
+        if (!postService.isDescriptionValid(description)) {
+            throw new InvalidDescriptionException("Too Long Text - must be less than 500 characters");
+        }
+        return postService.createPost(media, alt, description, visibility, creator);
+    }
 }
