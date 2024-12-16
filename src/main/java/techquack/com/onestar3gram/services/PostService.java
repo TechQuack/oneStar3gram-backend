@@ -64,16 +64,20 @@ public class PostService {
         return description != null && description.length() > 500;
     }
 
-    public void addLike(Integer postId) throws PostNotFoundException {
+    public Post addLike(Integer postId) throws PostNotFoundException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
         post.setLikes(post.getLikes() + 1);
+        postRepository.save(post);
+        return post;
     }
 
-    public void removeLike(Integer postId) throws PostNotFoundException, NegativeLikeNumberException {
+    public Post removeLike(Integer postId) throws PostNotFoundException, NegativeLikeNumberException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
         if (post.getLikes() == 0) {
             throw new NegativeLikeNumberException("error - impossible to have negative like number");
         }
         post.setLikes(post.getLikes() - 1);
+        postRepository.save(post);
+        return post;
     }
 }
