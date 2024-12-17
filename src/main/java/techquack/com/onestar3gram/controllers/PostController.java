@@ -1,5 +1,8 @@
 package techquack.com.onestar3gram.controllers;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import techquack.com.onestar3gram.entities.AppUser;
@@ -11,6 +14,7 @@ import techquack.com.onestar3gram.exceptions.PostNotFoundException;
 import techquack.com.onestar3gram.services.PostService;
 import techquack.com.onestar3gram.DTO.PublicationDetail;
 
+import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -31,6 +35,20 @@ public class PostController {
     @GetMapping(value = "", produces = "application/json")
     public @ResponseBody List<Post> getAllPosts() {
         return postService.getAllPosts();
+    }
+
+    @GetMapping(value = "/accessible", produces = "application/json")
+    public @ResponseBody List<Post> getAccessiblePosts() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String adminRole = "";
+        String privilegeRole = "";
+        //TODO: add roles names
+        boolean canUserSeePrivatePosts = auth.getAuthorities().stream().anyMatch(g -> g.getAuthority().equals(adminRole))
+                || auth.getAuthorities().stream().anyMatch(g -> g.getAuthority().equals(privilegeRole));
+        if (canUserSeePrivatePosts) {
+            return postService.getAllPosts();
+        }
+        return postService.getPublicPosts();
     }
 
     @PostMapping(value = "/send", produces = "application/json")
