@@ -33,12 +33,7 @@ public class PostController {
     }
 
     @GetMapping(value = "", produces = "application/json")
-    public @ResponseBody List<Post> getAllPosts() {
-        return postService.getAllPosts();
-    }
-
-    @GetMapping(value = "/accessible", produces = "application/json")
-    public @ResponseBody List<Post> getAccessiblePosts() {
+    public @ResponseBody List<Post> getPosts() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String adminRole = "";
         String privilegeRole = "";
