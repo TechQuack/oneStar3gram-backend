@@ -2,33 +2,68 @@ package techquack.com.onestar3gram.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    private final AuthenticationSuccessHandler successHandler;
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   Converter<Jwt, AbstractAuthenticationToken> authenticationConverter
+    ) throws Exception {
+        http.oauth2ResourceServer(resourceServer -> {
+            resourceServer.jwt(jwtDecoder -> {
+                jwtDecoder.jwtAuthenticationConverter(authenticationConverter);
+            });
+        });
 
-    public SecurityConfiguration(CustomAuthenticationSuccessHandler successHandler) {
-        this.successHandler = successHandler;
+        http.sessionManagement(sessions -> {
+            sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        });
+
+        http.authorizeHttpRequests(requests -> {
+            requests.requestMatchers("/swagger-ui/*").permitAll();
+            requests.requestMatchers("/v3/*").permitAll();
+            requests.requestMatchers("/v3/*/*").permitAll();
+            requests.anyRequest().authenticated();
+        });
+        return http.build();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .oauth2Login(oauth2 -> oauth2
-                        .successHandler(successHandler)
-                )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/")
-                );
-        http.authorizeHttpRequests(requests -> {
-            requests.anyRequest().permitAll();
-        });
-        return http.build();
+    JwtAuthenticationConverter authenticationConverter(
+            Converter<Map<String, Object>, Collection<GrantedAuthority>> authoritiesConverter) {
+        var authenticationConverter = new JwtAuthenticationConverter();
+        authenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> authoritiesConverter.convert(jwt.getClaims()));
+        return authenticationConverter;
+    }
+
+    @Bean
+    AuthoritiesConverter realmRolesAuthoritiesConverter() {
+        return claims -> {
+            var realmAccess = Optional.ofNullable((Map<String, Object>) claims.get("realm_access"));
+            var roles = realmAccess.flatMap(map -> Optional.ofNullable((List<String>) map.get("roles")));
+            return roles.stream().flatMap(Collection::stream)
+                    .map(SimpleGrantedAuthority::new)
+                    .map(GrantedAuthority.class::cast)
+                    .toList();
+        };
     }
 }
