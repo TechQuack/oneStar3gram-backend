@@ -10,22 +10,21 @@ public class AppUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String keycloakId;
+    private String keyCloakId;
+
 
     private String firstName;
     private String lastName;
     private String username;
 
+    private String email;
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public Integer getId() {
         return id;
-    }
-
-    public String getKeycloakId() {
-        return keycloakId;
-    }
-
-    public void setKeycloakId(String keycloakId) {
-        this.keycloakId = keycloakId;
     }
 
     public String getFirstName() {
@@ -44,11 +43,24 @@ public class AppUser {
         this.lastName = lastName;
     }
 
-    public String username() {
-        return username;
-    }
-
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getKeyCloakId() {
+        return keyCloakId;
+    }
+
+    public void setKeyCloakId(String keyCloakId) {
+        this.keyCloakId = keyCloakId;
+    }
+
 }
