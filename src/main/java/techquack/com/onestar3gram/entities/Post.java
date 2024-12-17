@@ -19,6 +19,7 @@ public class Post {
     private Date postDate;
     private String description;
     private boolean isPrivate;
+    private int likes;
     @OneToMany
     private List<Comment> comments;
 
@@ -85,5 +86,13 @@ public class Post {
 
     public void setAlt(String alt) {
         this.alt = alt;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
     }
 }
