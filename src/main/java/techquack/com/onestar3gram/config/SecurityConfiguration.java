@@ -26,6 +26,9 @@ public class SecurityConfiguration {
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
                 );
+        http.authorizeHttpRequests(requests -> {
+            requests.anyRequest().permitAll();
+        });
         return http.build();
     }
 }
