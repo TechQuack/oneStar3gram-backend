@@ -51,7 +51,7 @@ public class AppUserController {
         return ResponseEntity.ok(user);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/update")
+    @PutMapping(value = "/update")
     public ResponseEntity<AppUser> updateUser(@AuthenticationPrincipal OAuth2User principal,
                                                AppUser newUser) throws NotLoggedInException, EmailAlreadyTakenException, UsernameAlreadyTakenException {
         AppUser user = service.getUser(principal);
