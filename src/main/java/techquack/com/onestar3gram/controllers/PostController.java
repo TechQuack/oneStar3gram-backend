@@ -45,7 +45,7 @@ public class PostController {
     }
 
     @PutMapping(value = "/edit/{id}", produces = "application/json")
-    public @ResponseBody Post editPost(@PathVariable(value = "id") Integer postId, @RequestBody String alt, @RequestBody String description, @RequestBody boolean visibility) throws InvalidDescriptionException, PostNotFoundException {
+    public @ResponseBody Post editPost(@PathVariable(value = "id") Integer postId, @RequestParam("alt") String alt, @RequestParam("description") String description, @RequestParam("visibility") boolean visibility) throws InvalidDescriptionException, PostNotFoundException {
         if (postService.isDescriptionInvalid(description)) {
             throw new InvalidDescriptionException("Too Long Text - must be less than 500 characters");
         }
