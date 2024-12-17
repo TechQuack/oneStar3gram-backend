@@ -42,6 +42,7 @@ public class SecurityConfiguration {
             requests.requestMatchers("/swagger-ui/*").permitAll();
             requests.requestMatchers("/v3/*").permitAll();
             requests.requestMatchers("/v3/*/*").permitAll();
+            requests.requestMatchers("/video/upload").hasAuthority(KeycloakRoles.ADMIN.getRole());
             requests.anyRequest().authenticated();
         });
         return http.build();
