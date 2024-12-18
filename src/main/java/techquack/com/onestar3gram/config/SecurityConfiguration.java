@@ -42,6 +42,21 @@ public class SecurityConfiguration {
             requests.requestMatchers("/swagger-ui/*").permitAll();
             requests.requestMatchers("/v3/*").permitAll();
             requests.requestMatchers("/v3/*/*").permitAll();
+            //AppUser:
+            requests.requestMatchers("/user/username/*").permitAll();
+            requests.requestMatchers("/user/all").hasAuthority(KeycloakRoles.ADMIN.getRole());
+            requests.requestMatchers("/user/self").authenticated();
+            requests.requestMatchers("/user/update").authenticated();
+            requests.requestMatchers("/user/delete/*");
+            requests.requestMatchers("/user/*").permitAll();
+            //Comment:
+            //Image:
+            //Post:
+            requests.requestMatchers("/post").permitAll();
+            requests.requestMatchers("/post/send").hasAuthority(KeycloakRoles.ADMIN.getRole());
+            requests.requestMatchers("/post/edit/*").hasAuthority(KeycloakRoles.ADMIN.getRole());
+            requests.requestMatchers("/post/*").permitAll();
+            //Video:
             requests.requestMatchers("/video/upload").hasAuthority(KeycloakRoles.ADMIN.getRole());
             requests.anyRequest().authenticated();
         });
