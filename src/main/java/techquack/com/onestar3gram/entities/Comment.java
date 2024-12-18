@@ -14,30 +14,13 @@ public class Comment {
     private Integer id;
 
     @ManyToOne
-    private Post post;
-
-    @ManyToOne
     private AppUser AppUser;
     private String value;
     private Date postDate;
-    @OneToMany
-    private List<Comment> comments;
-
-    @ManyToOne
-    private Comment parent;
-
     private int likeCount;
 
     public Integer getId() {
         return id;
-    }
-
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
     }
 
     public AppUser getAppUser() {
@@ -64,27 +47,11 @@ public class Comment {
         this.postDate = postDate;
     }
 
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
     public int getLikeCount() {
         return likeCount;
     }
 
     public void setLikeCount(int likeCount) {
         this.likeCount = likeCount;
-    }
-
-    public Comment getParent() {
-        return parent;
-    }
-
-    public void setParent(Comment parent) {
-        this.parent = parent;
     }
 }

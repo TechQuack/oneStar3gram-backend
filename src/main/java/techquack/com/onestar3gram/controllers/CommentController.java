@@ -31,13 +31,6 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.OK).body(comments);
     }
 
-    @GetMapping(value = "comments/{commentId}/post", produces = "application/json")
-    public ResponseEntity<Post> getPostFromComment(@PathVariable int commentId) {
-        Comment c = this.commentService.getCommentById(commentId);
-        Post p = this.commentService.getPostFromComment(c);
-        return ResponseEntity.status(HttpStatus.OK).body(p);
-    }
-
     @PostMapping(value = "posts/{postId}/comments/value/{value}", produces = "application/json")
     public ResponseEntity<Comment> postComment(@PathVariable int postId, @PathVariable String value) {
         Comment c = this.commentService.createComment(postRepository.findOneById(postId), value);
@@ -55,6 +48,13 @@ public class CommentController {
     public ResponseEntity<Comment> putLike(@PathVariable int commentId) {
         Comment c = this.commentService.getCommentById(commentId);
         c = this.commentService.likeComment(c);
+        return ResponseEntity.status(HttpStatus.OK).body(c);
+    }
+
+    @PutMapping(value = "comments/{commentId}/unlike", produces = "application/json")
+    public ResponseEntity<Comment> removeLike(@PathVariable int commentId) {
+        Comment c = this.commentService.getCommentById(commentId);
+        c = this.commentService.unlikeComment(c);
         return ResponseEntity.status(HttpStatus.OK).body(c);
     }
 
