@@ -4,13 +4,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import techquack.com.onestar3gram.DTO.UpdatePostCommand;
 import techquack.com.onestar3gram.entities.AppUser;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
-import techquack.com.onestar3gram.exceptions.FileNotFoundException;
-import techquack.com.onestar3gram.exceptions.InvalidDescriptionException;
-import techquack.com.onestar3gram.exceptions.NegativeLikeNumberException;
-import techquack.com.onestar3gram.exceptions.PostNotFoundException;
+import techquack.com.onestar3gram.exceptions.*;
 import techquack.com.onestar3gram.services.AppUserService;
 import techquack.com.onestar3gram.services.PostService;
 import techquack.com.onestar3gram.DTO.SendPostCommand;
@@ -65,10 +63,16 @@ public class PostController {
         return postService.createPost(media, alt, description, visibility, creator);
     }
 
-    @PutMapping(value = "/edit/{id}", produces = "application/json")
-    public @ResponseBody Post editPost(@PathVariable(value = "id") int postId, @RequestParam("alt") String alt, @RequestParam("description") String description, @RequestParam("visibility") boolean visibility) throws InvalidDescriptionException, PostNotFoundException {
+    @PutMapping(value = "/{id}", produces = "application/json")
+    public @ResponseBody Post editPost(@PathVariable(value = "id") int postId, @RequestBody UpdatePostCommand updatePostCommand) throws InvalidDescriptionException, PostNotFoundException, InvalidAltException {
+        String alt = updatePostCommand.getAlt();
+        String description = updatePostCommand.getDescription();
+        Boolean visibility = updatePostCommand.getVisibility();
         if (postService.isDescriptionInvalid(description)) {
-            throw new InvalidDescriptionException("Too Long Text - must be less than 500 characters");
+            throw new InvalidDescriptionException("Too long text - must be less than 500 characters");
+        }
+        if (postService.isAltInvalid(alt)) {
+            throw new InvalidAltException("Too long text - must be less than 200 characters");
         }
         return postService.updatePost(postId, alt, description, visibility);
     }

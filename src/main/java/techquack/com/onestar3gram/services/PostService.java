@@ -16,6 +16,8 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final int MAX_DESCRIPTION_LENGTH = 500;
+    private final int MAX_ALT_LENGTH = 200;
 
     @Autowired
     public PostService(PostRepository postRepository) {
@@ -50,11 +52,17 @@ public class PostService {
         return post.getId();
     }
 
-    public Post updatePost(int postId, String alt, String description, boolean visibility) throws PostNotFoundException {
+    public Post updatePost(int postId, String alt, String description, Boolean visibility) throws PostNotFoundException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
-        post.setAlt(alt);
-        post.setDescription(description);
-        post.setPrivate(visibility);
+        if (alt != null) {
+            post.setAlt(alt);
+        }
+        if (description != null) {
+            post.setDescription(description);
+        }
+        if (visibility != null) {
+            post.setPrivate(visibility);
+        }
         postRepository.save(post);
         return post;
     }
@@ -69,7 +77,11 @@ public class PostService {
     }
 
     public boolean isDescriptionInvalid(String description) {
-        return description != null && description.length() > 500;
+        return description != null && description.length() > MAX_DESCRIPTION_LENGTH;
+    }
+
+    public boolean isAltInvalid(String alt) {
+        return alt != null && alt.length() > MAX_ALT_LENGTH;
     }
 
     public Post addLike(int postId) throws PostNotFoundException {
