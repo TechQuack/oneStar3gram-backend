@@ -77,7 +77,7 @@ public class PostController {
         return postService.updatePost(postId, alt, description, visibility);
     }
 
-    @DeleteMapping(value = "/delete/{id}", produces = "application/json")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public @ResponseBody void deletePost(@PathVariable(value = "id") int postId) {
         postService.deletePost(postId);
     }
