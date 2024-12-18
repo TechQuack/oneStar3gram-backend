@@ -1,6 +1,6 @@
 package techquack.com.onestar3gram.DTO;
 
-public class UpdatePostCommand {
+public class EditPostCommand {
 
     private String alt;
     private String description;

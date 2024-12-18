@@ -4,7 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import techquack.com.onestar3gram.DTO.UpdatePostCommand;
+import techquack.com.onestar3gram.DTO.EditPostCommand;
 import techquack.com.onestar3gram.entities.AppUser;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
@@ -64,10 +64,10 @@ public class PostController {
     }
 
     @PutMapping(value = "/{id}", produces = "application/json")
-    public @ResponseBody Post editPost(@PathVariable(value = "id") int postId, @RequestBody UpdatePostCommand updatePostCommand) throws InvalidDescriptionException, PostNotFoundException, InvalidAltException {
-        String alt = updatePostCommand.getAlt();
-        String description = updatePostCommand.getDescription();
-        Boolean visibility = updatePostCommand.getVisibility();
+    public @ResponseBody Post editPost(@PathVariable(value = "id") int postId, @RequestBody EditPostCommand editPostCommand) throws InvalidDescriptionException, PostNotFoundException, InvalidAltException {
+        String alt = editPostCommand.getAlt();
+        String description = editPostCommand.getDescription();
+        Boolean visibility = editPostCommand.getVisibility();
         if (postService.isDescriptionInvalid(description)) {
             throw new InvalidDescriptionException("Too long text - must be less than 500 characters");
         }
