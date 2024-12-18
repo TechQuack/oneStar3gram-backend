@@ -1,8 +1,5 @@
 package techquack.com.onestar3gram.DTO;
 
-import techquack.com.onestar3gram.entities.AppUser;
-import techquack.com.onestar3gram.entities.MediaFile;
-
 public class SendPostCommand {
 
     private int mediaId;
