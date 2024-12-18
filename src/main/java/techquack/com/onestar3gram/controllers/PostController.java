@@ -1,20 +1,21 @@
 package techquack.com.onestar3gram.controllers;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import techquack.com.onestar3gram.entities.AppUser;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
+import techquack.com.onestar3gram.exceptions.FileNotFoundException;
 import techquack.com.onestar3gram.exceptions.InvalidDescriptionException;
 import techquack.com.onestar3gram.exceptions.NegativeLikeNumberException;
 import techquack.com.onestar3gram.exceptions.PostNotFoundException;
+import techquack.com.onestar3gram.services.AppUserService;
 import techquack.com.onestar3gram.services.PostService;
-import techquack.com.onestar3gram.DTO.PublicationDetail;
+import techquack.com.onestar3gram.DTO.SendPostCommand;
+import techquack.com.onestar3gram.services.storage.StorageService;
 
-import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -22,9 +23,13 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final AppUserService userService;
+    private final StorageService storageService;
 
-    public PostController(PostService postService) {
+    public PostController(PostService postService, AppUserService userService, StorageService storageService) {
         this.postService = postService;
+        this.userService = userService;
+        this.storageService = storageService;
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
@@ -46,15 +51,17 @@ public class PostController {
         return postService.getPublicPosts();
     }
 
-    @PostMapping(value = "/send", produces = "application/json")
-    public @ResponseBody int sendPost(@RequestBody PublicationDetail publicationDetail, @RequestParam("alt") String alt,
-                                          @RequestParam("description") String description,
-                                          @RequestParam("visibility") boolean visibility) throws InvalidDescriptionException {
+    @PostMapping(value = "", produces = "application/json")
+    public @ResponseBody int sendPost(@RequestBody SendPostCommand sendPostCommand) throws InvalidDescriptionException, FileNotFoundException {
+
+        MediaFile media = storageService.getMediaFile(sendPostCommand.getMediaId());
+        AppUser creator = userService.getUserById(sendPostCommand.getCreatorId());
+        String alt = sendPostCommand.getAlt();
+        String description = sendPostCommand.getDescription();
+        boolean visibility = sendPostCommand.getVisibility();
         if (postService.isDescriptionInvalid(description)) {
             throw new InvalidDescriptionException("Too Long Text - must be less than 500 characters");
         }
-        MediaFile media = publicationDetail.getMedia();
-        AppUser creator = publicationDetail.getCreator();
         return postService.createPost(media, alt, description, visibility, creator);
     }
 
