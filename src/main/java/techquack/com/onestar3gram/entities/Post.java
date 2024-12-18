@@ -11,7 +11,7 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @ManyToOne
     private AppUser creator;
@@ -28,7 +28,7 @@ public class Post {
 
     private String alt;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 

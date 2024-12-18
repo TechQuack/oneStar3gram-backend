@@ -28,7 +28,7 @@ public class PostController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public @ResponseBody Post getPost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException {
+    public @ResponseBody Post getPost(@PathVariable(value = "id") int postId) throws PostNotFoundException {
         return postService.getPost(postId);
     }
 
@@ -47,7 +47,7 @@ public class PostController {
     }
 
     @PostMapping(value = "/send", produces = "application/json")
-    public @ResponseBody Integer sendPost(@RequestBody PublicationDetail publicationDetail, @RequestParam("alt") String alt,
+    public @ResponseBody int sendPost(@RequestBody PublicationDetail publicationDetail, @RequestParam("alt") String alt,
                                           @RequestParam("description") String description,
                                           @RequestParam("visibility") boolean visibility) throws InvalidDescriptionException {
         if (postService.isDescriptionInvalid(description)) {
@@ -59,7 +59,7 @@ public class PostController {
     }
 
     @PutMapping(value = "/edit/{id}", produces = "application/json")
-    public @ResponseBody Post editPost(@PathVariable(value = "id") Integer postId, @RequestParam("alt") String alt, @RequestParam("description") String description, @RequestParam("visibility") boolean visibility) throws InvalidDescriptionException, PostNotFoundException {
+    public @ResponseBody Post editPost(@PathVariable(value = "id") int postId, @RequestParam("alt") String alt, @RequestParam("description") String description, @RequestParam("visibility") boolean visibility) throws InvalidDescriptionException, PostNotFoundException {
         if (postService.isDescriptionInvalid(description)) {
             throw new InvalidDescriptionException("Too Long Text - must be less than 500 characters");
         }
@@ -67,17 +67,17 @@ public class PostController {
     }
 
     @DeleteMapping(value = "/delete/{id}", produces = "application/json")
-    public @ResponseBody void deletePost(@PathVariable(value = "id") Integer postId) {
+    public @ResponseBody void deletePost(@PathVariable(value = "id") int postId) {
         postService.deletePost(postId);
     }
 
     @PutMapping(value = "/like/add/{id}", produces = "application/json")
-    public @ResponseBody Post likePost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException {
+    public @ResponseBody Post likePost(@PathVariable(value = "id") int postId) throws PostNotFoundException {
         return postService.addLike(postId);
     }
 
     @PutMapping(value = "/like/remove/{id}", produces = "application/json")
-    public @ResponseBody Post unlikePost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException, NegativeLikeNumberException {
+    public @ResponseBody Post unlikePost(@PathVariable(value = "id") int postId) throws PostNotFoundException, NegativeLikeNumberException {
         return postService.removeLike(postId);
     }
 
