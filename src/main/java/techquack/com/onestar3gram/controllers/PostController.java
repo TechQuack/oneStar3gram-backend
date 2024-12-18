@@ -1,20 +1,18 @@
 package techquack.com.onestar3gram.controllers;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import techquack.com.onestar3gram.config.KeycloakRoles;
 import techquack.com.onestar3gram.entities.AppUser;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.InvalidDescriptionException;
 import techquack.com.onestar3gram.exceptions.NegativeLikeNumberException;
 import techquack.com.onestar3gram.exceptions.PostNotFoundException;
+import techquack.com.onestar3gram.exceptions.UnauthorizedPostException;
 import techquack.com.onestar3gram.services.PostService;
 import techquack.com.onestar3gram.DTO.PublicationDetail;
 
-import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -28,18 +26,17 @@ public class PostController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public @ResponseBody Post getPost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException {
-        return postService.getPost(postId);
+    public @ResponseBody Post getPost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException, UnauthorizedPostException {
+        Post post = postService.getPost(postId);
+        if (post.isPrivate() && !KeycloakRoles.hasRole(KeycloakRoles.ADMIN) && !KeycloakRoles.hasRole(KeycloakRoles.PRIVILEGED)) {
+            throw new UnauthorizedPostException("error - impossible to see post");
+        }
+        else return post;
     }
 
     @GetMapping(value = "", produces = "application/json")
     public @ResponseBody List<Post> getPosts() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String adminRole = "";
-        String privilegeRole = "";
-        //TODO: add roles names
-        boolean canUserSeePrivatePosts = auth.getAuthorities().stream().anyMatch(g -> g.getAuthority().equals(adminRole))
-                || auth.getAuthorities().stream().anyMatch(g -> g.getAuthority().equals(privilegeRole));
+        boolean canUserSeePrivatePosts = KeycloakRoles.hasRole(KeycloakRoles.ADMIN) || KeycloakRoles.hasRole(KeycloakRoles.PRIVILEGED);
         if (canUserSeePrivatePosts) {
             return postService.getAllPosts();
         }
