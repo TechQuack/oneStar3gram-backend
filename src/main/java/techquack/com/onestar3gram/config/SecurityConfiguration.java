@@ -43,6 +43,7 @@ public class SecurityConfiguration {
             requests.requestMatchers("/v3/*").permitAll();
             requests.requestMatchers("/v3/*/*").permitAll();
             requests.requestMatchers("/video/upload").hasAuthority(KeycloakRoles.ADMIN.getRole());
+            requests.requestMatchers("/uploads/*").permitAll();
             requests.anyRequest().authenticated();
         });
         return http.build();
