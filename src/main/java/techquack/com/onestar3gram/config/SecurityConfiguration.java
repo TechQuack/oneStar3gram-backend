@@ -72,6 +72,7 @@ public class SecurityConfiguration {
             requests.requestMatchers(HttpMethod.GET, "/video/").permitAll();
             requests.requestMatchers(HttpMethod.GET, "video/download/*").permitAll();
             requests.requestMatchers(HttpMethod.POST,"/video/upload").hasAuthority(KeycloakRoles.ADMIN.getRole());
+            requests.requestMatchers(HttpMethod.GET, "/uploads/*").permitAll();
             requests.requestMatchers(HttpMethod.GET,"/video/*").permitAll();
             requests.requestMatchers(HttpMethod.DELETE, "/video/*").hasAuthority(KeycloakRoles.ADMIN.getRole());
             requests.anyRequest().authenticated();
