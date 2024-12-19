@@ -3,6 +3,7 @@ package techquack.com.onestar3gram.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -43,22 +44,39 @@ public class SecurityConfiguration {
             requests.requestMatchers("/v3/*").permitAll();
             requests.requestMatchers("/v3/*/*").permitAll();
             //AppUser:
-            requests.requestMatchers("/user/username/*").permitAll();
-            requests.requestMatchers("/user/all").hasAuthority(KeycloakRoles.ADMIN.getRole());
-            requests.requestMatchers("/user/self").authenticated();
-            requests.requestMatchers("/user/update").authenticated();
-            requests.requestMatchers("/user/delete/*");
-            requests.requestMatchers("/user/*").permitAll();
+            requests.requestMatchers(HttpMethod.GET,"/user/username/*").permitAll();
+            requests.requestMatchers(HttpMethod.GET,"/user/all").hasAuthority(KeycloakRoles.ADMIN.getRole());
+            requests.requestMatchers(HttpMethod.GET,"/user/self").authenticated();
+            requests.requestMatchers(HttpMethod.PUT,"/user/update").authenticated();
+            requests.requestMatchers(HttpMethod.DELETE,"/user/delete/*").authenticated();
+            requests.requestMatchers(HttpMethod.GET,"/user/*").permitAll();
             //Comment:
+            requests.requestMatchers(HttpMethod.GET,"posts/*/comments").permitAll();
+            requests.requestMatchers(HttpMethod.GET,"comments/*/post").permitAll();
+            requests.requestMatchers(HttpMethod.POST,"post/*/comments/value/*").authenticated();
+            requests.requestMatchers(HttpMethod.PUT,"comments/*/value/*").authenticated();
+            requests.requestMatchers(HttpMethod.PUT,"comments/*/like").authenticated();
+            requests.requestMatchers(HttpMethod.GET, "comments/*").permitAll();
+            requests.requestMatchers(HttpMethod.DELETE, "comments/*").authenticated();
             //Image:
+            requests.requestMatchers(HttpMethod.GET,"/image/").permitAll();
+            requests.requestMatchers(HttpMethod.GET,"/image/download/*").permitAll();
+            requests.requestMatchers(HttpMethod.POST,"/image/upload").hasAuthority(KeycloakRoles.ADMIN.getRole());
+            requests.requestMatchers(HttpMethod.GET,"/image/*").permitAll();
             //Post:
-            requests.requestMatchers("/post").permitAll();
-            requests.requestMatchers("/post/send").hasAuthority(KeycloakRoles.ADMIN.getRole());
-            requests.requestMatchers("/post/edit/*").hasAuthority(KeycloakRoles.ADMIN.getRole());
-            requests.requestMatchers("/post/*").permitAll();
+            requests.requestMatchers(HttpMethod.GET,"/post").permitAll();
+            requests.requestMatchers(HttpMethod.POST,"/post/send").hasAuthority(KeycloakRoles.ADMIN.getRole());
+            requests.requestMatchers(HttpMethod.PUT,"/post/edit/*").hasAuthority(KeycloakRoles.ADMIN.getRole());
+            requests.requestMatchers(HttpMethod.DELETE, "/post/delete/*").hasAuthority(KeycloakRoles.ADMIN.getRole());
+            requests.requestMatchers(HttpMethod.PUT, "/post/like/add/*").authenticated();
+            requests.requestMatchers(HttpMethod.PUT, "/post/like/remove/*").authenticated();
+            requests.requestMatchers(HttpMethod.GET,"/post/*").permitAll();
             //Video:
-            requests.requestMatchers("/video/upload").hasAuthority(KeycloakRoles.ADMIN.getRole());
-            requests.requestMatchers("/uploads/*").permitAll();
+            requests.requestMatchers(HttpMethod.GET, "/video/").permitAll();
+            requests.requestMatchers(HttpMethod.GET, "video/download/*").permitAll();
+            requests.requestMatchers(HttpMethod.POST,"/video/upload").hasAuthority(KeycloakRoles.ADMIN.getRole());
+            requests.requestMatchers(HttpMethod.GET,"/video/*").permitAll();
+            requests.requestMatchers(HttpMethod.DELETE, "/video/*").hasAuthority(KeycloakRoles.ADMIN.getRole());
             requests.anyRequest().authenticated();
         });
         return http.build();
