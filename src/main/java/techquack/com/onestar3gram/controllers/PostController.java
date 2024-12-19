@@ -50,7 +50,7 @@ public class PostController {
     }
 
     @PostMapping(value = "", produces = "application/json")
-    public @ResponseBody int sendPost(@RequestBody SendPostCommand sendPostCommand) throws InvalidDescriptionException, FileNotFoundException {
+    public @ResponseBody int sendPost(@RequestBody SendPostCommand sendPostCommand) throws InvalidDescriptionException, FileNotFoundException, InvalidAltException {
 
         MediaFile media = storageService.getMediaFile(sendPostCommand.getMediaId());
         AppUser creator = userService.getUserById(sendPostCommand.getCreatorId());
@@ -59,6 +59,9 @@ public class PostController {
         boolean visibility = sendPostCommand.getVisibility();
         if (postService.isDescriptionInvalid(description)) {
             throw new InvalidDescriptionException("Too Long Text - must be less than 500 characters");
+        }
+        if (postService.isAltInvalid(alt)) {
+            throw new InvalidAltException("Too long text - must be less than 200 characters");
         }
         return postService.createPost(media, alt, description, visibility, creator);
     }
