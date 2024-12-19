@@ -1,9 +1,11 @@
 package techquack.com.onestar3gram.controllers;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import techquack.com.onestar3gram.DTO.PublicationDetail;
 import techquack.com.onestar3gram.config.KeycloakRoles;
-import techquack.com.onestar3gram.entities.AppUser;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.InvalidDescriptionException;
@@ -11,7 +13,6 @@ import techquack.com.onestar3gram.exceptions.NegativeLikeNumberException;
 import techquack.com.onestar3gram.exceptions.PostNotFoundException;
 import techquack.com.onestar3gram.exceptions.UnauthorizedPostException;
 import techquack.com.onestar3gram.services.PostService;
-import techquack.com.onestar3gram.DTO.PublicationDetail;
 
 import java.util.List;
 
@@ -46,13 +47,14 @@ public class PostController {
     @PostMapping(value = "/send", produces = "application/json")
     public @ResponseBody Integer sendPost(@RequestBody PublicationDetail publicationDetail, @RequestParam("alt") String alt,
                                           @RequestParam("description") String description,
-                                          @RequestParam("visibility") boolean visibility) throws InvalidDescriptionException {
+                                          @RequestParam("visibility") boolean visibility,
+                                          @AuthenticationPrincipal Jwt jwt) throws InvalidDescriptionException {
         if (postService.isDescriptionInvalid(description)) {
             throw new InvalidDescriptionException("Too Long Text - must be less than 500 characters");
         }
         MediaFile media = publicationDetail.getMedia();
-        AppUser creator = publicationDetail.getCreator();
-        return postService.createPost(media, alt, description, visibility, creator);
+        String creatorId = jwt.getSubject();
+        return postService.createPost(media, alt, description, visibility, creatorId);
     }
 
     @PutMapping(value = "/edit/{id}", produces = "application/json")

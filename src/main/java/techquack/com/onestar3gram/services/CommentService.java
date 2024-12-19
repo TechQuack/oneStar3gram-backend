@@ -39,7 +39,7 @@ public class CommentService {
         return comment.getPost();
     }
 
-    public Comment createComment(Post post, String value) throws EmptyException, PostInvalidException {
+    public Comment createComment(Post post, String value, String userId) throws EmptyException, PostInvalidException {
         if (post == null) {
             throw new PostInvalidException();
         }
@@ -51,7 +51,7 @@ public class CommentService {
         Comment c = new Comment();
         c.setPost(post);
         c.setValue(value);
-
+        c.setAuthorId(userId);
         this.commentRepository.save(c);
         return c;
     }

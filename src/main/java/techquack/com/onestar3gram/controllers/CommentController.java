@@ -3,11 +3,14 @@ package techquack.com.onestar3gram.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import techquack.com.onestar3gram.entities.Comment;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.repositories.PostRepository;
 import techquack.com.onestar3gram.services.CommentService;
+
 import java.util.List;
 
 @RestController
@@ -39,8 +42,10 @@ public class CommentController {
     }
 
     @PostMapping(value = "posts/{postId}/comments/value/{value}", produces = "application/json")
-    public ResponseEntity<Comment> postComment(@PathVariable int postId, @PathVariable String value) {
-        Comment c = this.commentService.createComment(postRepository.findOneById(postId), value);
+    public ResponseEntity<Comment> postComment(@PathVariable int postId, @PathVariable String value,
+                                               @AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt.getSubject();
+        Comment c = this.commentService.createComment(postRepository.findOneById(postId), value, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(c);
     }
 

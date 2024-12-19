@@ -13,8 +13,7 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    private AppUser creator;
+    private String creatorId;
 
     private Date postDate;
     private String description;
@@ -32,12 +31,12 @@ public class Post {
         return id;
     }
 
-    public AppUser getCreator() {
-        return creator;
+    public String getCreatorId() {
+        return creatorId;
     }
 
-    public void setCreator(AppUser creator) {
-        this.creator = creator;
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
     }
 
     public Date getPostDate() {

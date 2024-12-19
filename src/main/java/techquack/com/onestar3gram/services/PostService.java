@@ -2,7 +2,6 @@ package techquack.com.onestar3gram.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import techquack.com.onestar3gram.entities.AppUser;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.NegativeLikeNumberException;
@@ -38,13 +37,13 @@ public class PostService {
         return postRepository.findAll().stream().filter(Post::isPrivate).toList();
     }
 
-    public Integer createPost(MediaFile media, String alt, String description, boolean visibility, AppUser creator) {
+    public Integer createPost(MediaFile media, String alt, String description, boolean visibility, String creatorId) {
         Post post = new Post();
         post.setMedia(media);
         post.setAlt(alt);
         post.setDescription(description);
         post.setPrivate(visibility);
-        post.setCreator(creator);
+        post.setCreatorId(creatorId);
         post.setPostDate(new Date());
         postRepository.save(post);
         return post.getId();

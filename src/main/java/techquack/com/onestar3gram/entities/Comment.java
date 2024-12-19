@@ -16,8 +16,7 @@ public class Comment {
     @ManyToOne
     private Post post;
 
-    @ManyToOne
-    private AppUser AppUser;
+    private String authorId;
     private String value;
     private Date postDate;
     @OneToMany
@@ -40,12 +39,12 @@ public class Comment {
         this.post = post;
     }
 
-    public AppUser getAppUser() {
-        return AppUser;
+    public String getAuthorId() {
+        return authorId;
     }
 
-    public void setAppUser(AppUser AppUser) {
-        this.AppUser = AppUser;
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
     }
 
     public String getValue() {
