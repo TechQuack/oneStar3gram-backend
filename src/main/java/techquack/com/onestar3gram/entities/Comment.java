@@ -14,9 +14,6 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    private Post post;
-
     private String authorId;
     private String value;
     private Date postDate;
@@ -33,22 +30,9 @@ public class Comment {
         return id;
     }
 
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
-
-    public String getAuthorId() {
-        return authorId;
-    }
-
     public void setAuthorId(String authorId) {
         this.authorId = authorId;
-    }
-
+        }
     public String getValue() {
         return value;
     }
@@ -65,14 +49,6 @@ public class Comment {
         this.postDate = postDate;
     }
 
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
     public int getLikeCount() {
         return likers.size();
     }
@@ -87,13 +63,5 @@ public class Comment {
 
     public void removeLike(String keycloakId) {
         this.likers.remove(keycloakId);
-    }
-
-    public Comment getParent() {
-        return parent;
-    }
-
-    public void setParent(Comment parent) {
-        this.parent = parent;
     }
 }

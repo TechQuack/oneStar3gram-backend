@@ -5,9 +5,13 @@ import org.springframework.stereotype.Service;
 import techquack.com.onestar3gram.entities.Comment;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.comment.CommentInvalidException;
+import techquack.com.onestar3gram.exceptions.comment.EmptyLikeCommentException;
 import techquack.com.onestar3gram.exceptions.utils.EmptyException;
 import techquack.com.onestar3gram.exceptions.post.PostInvalidException;
 import techquack.com.onestar3gram.repositories.CommentRepository;
+import techquack.com.onestar3gram.repositories.PostRepository;
+
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -15,6 +19,9 @@ public class CommentService {
 
     @Autowired
     CommentRepository commentRepository;
+
+    @Autowired
+    PostRepository postRepository;
 
     public Comment getCommentById(int id) {
         Comment c = this.commentRepository.findOneById(id);
@@ -31,15 +38,8 @@ public class CommentService {
         return post.getComments();
     }
 
-    public Post getPostFromComment(Comment comment) throws CommentInvalidException {
-        if (comment == null) {
-            throw new CommentInvalidException();
-        }
+    public Comment createComment(Post post, String value) throws EmptyException, PostInvalidException {
 
-        return comment.getPost();
-    }
-
-    public Comment createComment(Post post, String value, String userId) throws EmptyException, PostInvalidException {
         if (post == null) {
             throw new PostInvalidException();
         }
@@ -49,10 +49,14 @@ public class CommentService {
         }
 
         Comment c = new Comment();
-        c.setPost(post);
+        c.setPostDate(new Date());
         c.setValue(value);
         c.setAuthorId(userId);
         this.commentRepository.save(c);
+
+        post.addComment(c);
+        this.postRepository.save(post);
+
         return c;
     }
 
@@ -73,7 +77,15 @@ public class CommentService {
             throw new CommentInvalidException();
         }
 
+        Post p = this.postRepository.findByCommentId(comment.getId());
+
+        if (p == null) {
+            throw new PostInvalidException();
+        }
+
+        p.removeComment(comment);
         this.commentRepository.delete(comment);
+        this.postRepository.save(p);
         return comment;
     }
 
@@ -86,6 +98,20 @@ public class CommentService {
         } else {
             comment.addLike(userId);
         }
+        this.commentRepository.save(comment);
+        return comment;
+    }
+
+    public Comment unlikeComment(Comment comment) throws CommentInvalidException {
+        if (comment == null) {
+            throw new CommentInvalidException();
+        }
+
+        if (comment.getLikeCount() == 0) {
+            throw new EmptyLikeCommentException();
+        }
+
+        comment.setLikeCount(comment.getLikeCount() - 1);
         this.commentRepository.save(comment);
         return comment;
     }
