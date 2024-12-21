@@ -2,6 +2,9 @@ package techquack.com.onestar3gram.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import techquack.com.onestar3gram.DTO.CommentDTO;
+import techquack.com.onestar3gram.DTO.PostDTO;
+import techquack.com.onestar3gram.entities.Comment;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.PostNotFoundException;
@@ -15,9 +18,16 @@ public class PostService {
 
     private final PostRepository postRepository;
 
+    private final AdminClientService adminClientService;
+
+    private final CommentService commentService;
+
     @Autowired
-    public PostService(PostRepository postRepository) {
+    public PostService(PostRepository postRepository, AdminClientService adminClientService,
+                       CommentService commentService) {
+        this.adminClientService = adminClientService;
         this.postRepository = postRepository;
+        this.commentService = commentService;
     }
 
     public Post getPost(Integer postId) throws PostNotFoundException {
@@ -79,5 +89,28 @@ public class PostService {
         }
         postRepository.save(post);
         return post;
+    }
+
+    public PostDTO getDTO(Post post) {
+        PostDTO dto = new PostDTO();
+        dto.setId(post.getId());
+        dto.setAlt(post.getAlt());
+        dto.setDescription(post.getDescription());
+        dto.setPrivate(post.isPrivate());
+        dto.setPostDate(post.getPostDate());
+        dto.setMedia(post.getMedia());
+        dto.setComments(getCommentsDTO(post.getComments()));
+        dto.setCreator(adminClientService.searchByKeycloakId(post.getCreatorId()).get(0).getUsername());
+        return dto;
+    }
+
+    public List<PostDTO> getDTOList(List<Post> posts) {
+        return posts.stream()
+                .map(this::getDTO)
+                .toList();
+    }
+
+    private List<CommentDTO> getCommentsDTO(List<Comment> comments) {
+        return commentService.getListDTO(comments);
     }
 }

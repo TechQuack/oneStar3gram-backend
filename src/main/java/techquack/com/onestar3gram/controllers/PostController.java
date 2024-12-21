@@ -4,6 +4,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import techquack.com.onestar3gram.DTO.PostDTO;
 import techquack.com.onestar3gram.DTO.PublicationDetail;
 import techquack.com.onestar3gram.config.KeycloakRoles;
 import techquack.com.onestar3gram.entities.MediaFile;
@@ -26,21 +27,21 @@ public class PostController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public @ResponseBody Post getPost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException, UnauthorizedPostException {
+    public @ResponseBody PostDTO getPost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException, UnauthorizedPostException {
         Post post = postService.getPost(postId);
         if (post.isPrivate() && !KeycloakRoles.hasRole(KeycloakRoles.ADMIN) && !KeycloakRoles.hasRole(KeycloakRoles.PRIVILEGED)) {
             throw new UnauthorizedPostException("error - impossible to see post");
         }
-        else return post;
+        else return postService.getDTO(post);
     }
 
     @GetMapping(value = "", produces = "application/json")
-    public @ResponseBody List<Post> getPosts() {
+    public @ResponseBody List<PostDTO> getPosts() {
         boolean canUserSeePrivatePosts = KeycloakRoles.hasRole(KeycloakRoles.ADMIN) || KeycloakRoles.hasRole(KeycloakRoles.PRIVILEGED);
         if (canUserSeePrivatePosts) {
-            return postService.getAllPosts();
+            return postService.getDTOList(postService.getAllPosts());
         }
-        return postService.getPublicPosts();
+        return postService.getDTOList(postService.getPublicPosts());
     }
 
     @PostMapping(value = "/send", produces = "application/json")
