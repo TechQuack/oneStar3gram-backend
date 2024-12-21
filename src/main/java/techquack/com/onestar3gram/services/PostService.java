@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
-import techquack.com.onestar3gram.exceptions.NegativeLikeNumberException;
 import techquack.com.onestar3gram.exceptions.PostNotFoundException;
 import techquack.com.onestar3gram.repositories.PostRepository;
 
@@ -71,19 +70,13 @@ public class PostService {
         return description != null && description.length() > 500;
     }
 
-    public Post addLike(Integer postId) throws PostNotFoundException {
+    public Post like(Integer postId, String userId) throws PostNotFoundException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
-        post.setLikes(post.getLikes() + 1);
-        postRepository.save(post);
-        return post;
-    }
-
-    public Post removeLike(Integer postId) throws PostNotFoundException, NegativeLikeNumberException {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
-        if (post.getLikes() == 0) {
-            throw new NegativeLikeNumberException("error - impossible to have negative like number");
+        if (post.getLikers().contains(userId)) {
+            post.getLikers().remove(userId);
+        } else {
+            post.getLikers().add(userId);
         }
-        post.setLikes(post.getLikes() - 1);
         postRepository.save(post);
         return post;
     }

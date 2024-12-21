@@ -2,6 +2,7 @@ package techquack.com.onestar3gram.entities;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +19,9 @@ public class Post {
     private Date postDate;
     private String description;
     private boolean isPrivate;
-    private int likes;
+
+    @ElementCollection
+    private List<String> likers = new ArrayList<>();
     @OneToMany
     private List<Comment> comments;
 
@@ -87,11 +90,19 @@ public class Post {
         this.alt = alt;
     }
 
-    public int getLikes() {
-        return likes;
+    public int getLikeCount() {
+        return likers.size();
     }
 
-    public void setLikes(int likes) {
-        this.likes = likes;
+    public List<String> getLikers() {
+        return likers;
+    }
+
+    public void addLike(String keycloakId) {
+        this.likers.add(keycloakId);
+    }
+
+    public void removeLike(String keycloakId) {
+        this.likers.remove(keycloakId);
     }
 }

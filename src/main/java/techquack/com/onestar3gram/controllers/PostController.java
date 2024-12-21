@@ -9,7 +9,6 @@ import techquack.com.onestar3gram.config.KeycloakRoles;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.InvalidDescriptionException;
-import techquack.com.onestar3gram.exceptions.NegativeLikeNumberException;
 import techquack.com.onestar3gram.exceptions.PostNotFoundException;
 import techquack.com.onestar3gram.exceptions.UnauthorizedPostException;
 import techquack.com.onestar3gram.services.PostService;
@@ -70,14 +69,10 @@ public class PostController {
         postService.deletePost(postId);
     }
 
-    @PutMapping(value = "/like/add/{id}", produces = "application/json")
-    public @ResponseBody Post likePost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException {
-        return postService.addLike(postId);
-    }
-
-    @PutMapping(value = "/like/remove/{id}", produces = "application/json")
-    public @ResponseBody Post unlikePost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException, NegativeLikeNumberException {
-        return postService.removeLike(postId);
+    @PutMapping(value = "/like/{id}", produces = "application/json")
+    public @ResponseBody Post likePost(@PathVariable(value = "id") Integer postId,
+                                       @AuthenticationPrincipal Jwt jwt) throws PostNotFoundException {
+        return postService.like(postId, jwt.getSubject());
     }
 
 }

@@ -57,9 +57,10 @@ public class CommentController {
     }
 
     @PutMapping(value = "comments/{commentId}/like", produces = "application/json")
-    public ResponseEntity<Comment> putLike(@PathVariable int commentId) {
+    public ResponseEntity<Comment> putLike(@PathVariable int commentId,
+                                           @AuthenticationPrincipal Jwt jwt) {
         Comment c = this.commentService.getCommentById(commentId);
-        c = this.commentService.likeComment(c);
+        c = this.commentService.likeComment(c, jwt.getSubject());
         return ResponseEntity.status(HttpStatus.OK).body(c);
     }
 

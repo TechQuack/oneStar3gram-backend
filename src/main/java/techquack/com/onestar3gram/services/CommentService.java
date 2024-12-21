@@ -77,12 +77,15 @@ public class CommentService {
         return comment;
     }
 
-    public Comment likeComment(Comment comment) throws CommentInvalidException {
+    public Comment likeComment(Comment comment, String userId) throws CommentInvalidException {
         if (comment == null) {
             throw new CommentInvalidException();
         }
-
-        comment.setLikeCount(comment.getLikeCount() + 1);
+        if (comment.getLikers().contains(userId)) {
+            comment.removeLike(userId);
+        } else {
+            comment.addLike(userId);
+        }
         this.commentRepository.save(comment);
         return comment;
     }
