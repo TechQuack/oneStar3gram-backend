@@ -24,8 +24,9 @@ public class CommentController {
     CommentService commentService;
 
     @GetMapping(value="comments/{commentId}", produces = "application/json")
-    public ResponseEntity<Comment> getCommentById(@PathVariable int commentId) {
-        return ResponseEntity.status(HttpStatus.OK).body(this.commentService.getCommentById(commentId));
+    public ResponseEntity<CommentDTO> getCommentById(@PathVariable int commentId) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                commentService.getDTO(commentService.getCommentById(commentId)));
     }
 
     @GetMapping(value="posts/{postId}/comments", produces = "application/json")

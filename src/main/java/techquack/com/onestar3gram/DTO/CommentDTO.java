@@ -1,8 +1,6 @@
 package techquack.com.onestar3gram.DTO;
 
-import jakarta.persistence.*;
 import techquack.com.onestar3gram.entities.Comment;
-import techquack.com.onestar3gram.entities.Post;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,8 +9,6 @@ import java.util.List;
 public class CommentDTO {
 
     private Integer id;
-
-    private Post post;
 
     private String author;
     private String value;
@@ -28,18 +24,6 @@ public class CommentDTO {
     }
 
     public void setId(Integer id) { this.id = id; }
-
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
 
     public void setAuthor(String author) {
         this.author = author;
