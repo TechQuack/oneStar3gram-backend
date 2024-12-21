@@ -2,10 +2,10 @@ package techquack.com.onestar3gram.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import techquack.com.onestar3gram.DTO.CommentDTO;
 import techquack.com.onestar3gram.entities.Comment;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.comment.CommentInvalidException;
-import techquack.com.onestar3gram.exceptions.comment.EmptyLikeCommentException;
 import techquack.com.onestar3gram.exceptions.utils.EmptyException;
 import techquack.com.onestar3gram.exceptions.post.PostInvalidException;
 import techquack.com.onestar3gram.repositories.CommentRepository;
@@ -23,6 +23,9 @@ public class CommentService {
     @Autowired
     PostRepository postRepository;
 
+    @Autowired
+    AdminClientService adminClientService;
+
     public Comment getCommentById(int id) {
         Comment c = this.commentRepository.findOneById(id);
         if (c == null) {
@@ -38,7 +41,7 @@ public class CommentService {
         return post.getComments();
     }
 
-    public Comment createComment(Post post, String value) throws EmptyException, PostInvalidException {
+    public Comment createComment(Post post, String value, String userId) throws EmptyException, PostInvalidException {
 
         if (post == null) {
             throw new PostInvalidException();
@@ -102,17 +105,27 @@ public class CommentService {
         return comment;
     }
 
-    public Comment unlikeComment(Comment comment) throws CommentInvalidException {
-        if (comment == null) {
-            throw new CommentInvalidException();
-        }
+    public List<CommentDTO> getListDTO(List<Comment> comments) {
+        return comments.stream()
+                .map(this::getDTO)
+                .toList();
+    }
 
-        if (comment.getLikeCount() == 0) {
-            throw new EmptyLikeCommentException();
-        }
+    public CommentDTO getDTO(Comment comment) {
+        CommentDTO dto = new CommentDTO();
+        dto.setAuthor(adminClientService.searchByKeycloakId(comment.getAuthorId()).get(0).getUsername());
+        dto.setId(comment.getId());
+        dto.setParent(comment.getParent());
+        dto.setValue(comment.getValue());
+        dto.setPostDate(comment.getPostDate());
+        dto.setComments(comment.getComments());
+        dto.setLikers(getUsers(comment.getLikers()));
+        return dto;
+    }
 
-        comment.setLikeCount(comment.getLikeCount() - 1);
-        this.commentRepository.save(comment);
-        return comment;
+    private List<String> getUsers(List<String> likers) {
+       return likers.stream()
+                    .map(id -> adminClientService.searchByKeycloakId(id).get(0).getUsername())
+                    .toList();
     }
 }

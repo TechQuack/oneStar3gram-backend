@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import techquack.com.onestar3gram.DTO.CommentDTO;
 import techquack.com.onestar3gram.entities.Comment;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.repositories.PostRepository;
@@ -28,10 +29,10 @@ public class CommentController {
     }
 
     @GetMapping(value="posts/{postId}/comments", produces = "application/json")
-    public ResponseEntity<List<Comment>> getPostComments(@PathVariable int postId) {
+    public ResponseEntity<List<CommentDTO>> getPostComments(@PathVariable int postId) {
         Post p = this.postRepository.findOneById(postId);
         List<Comment> comments = this.commentService.getPostComments(p);
-        return ResponseEntity.status(HttpStatus.OK).body(comments);
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.getListDTO(comments));
     }
 
     @PostMapping(value = "posts/{postId}/comments/value/{value}", produces = "application/json")
@@ -54,13 +55,6 @@ public class CommentController {
                                            @AuthenticationPrincipal Jwt jwt) {
         Comment c = this.commentService.getCommentById(commentId);
         c = this.commentService.likeComment(c, jwt.getSubject());
-        return ResponseEntity.status(HttpStatus.OK).body(c);
-    }
-
-    @PutMapping(value = "comments/{commentId}/unlike", produces = "application/json")
-    public ResponseEntity<Comment> removeLike(@PathVariable int commentId) {
-        Comment c = this.commentService.getCommentById(commentId);
-        c = this.commentService.unlikeComment(c);
         return ResponseEntity.status(HttpStatus.OK).body(c);
     }
 
