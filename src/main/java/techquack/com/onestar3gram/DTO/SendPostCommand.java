@@ -3,7 +3,6 @@ package techquack.com.onestar3gram.DTO;
 public class SendPostCommand {
 
     private int mediaId;
-    private int creatorId;
     private String alt;
     private String description;
     private boolean visibility;
@@ -14,14 +13,6 @@ public class SendPostCommand {
 
     public void setMediaId(int mediaId) {
         this.mediaId = mediaId;
-    }
-
-    public int getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(int creatorId) {
-        this.creatorId = creatorId;
     }
 
     public String getAlt() {

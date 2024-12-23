@@ -5,15 +5,14 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import techquack.com.onestar3gram.DTO.PostDTO;
-import techquack.com.onestar3gram.DTO.PublicationDetail;
 import techquack.com.onestar3gram.DTO.EditPostCommand;
+import techquack.com.onestar3gram.DTO.SendPostCommand;
 import techquack.com.onestar3gram.config.KeycloakRoles;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
-import techquack.com.onestar3gram.exceptions.InvalidDescriptionException;
-import techquack.com.onestar3gram.exceptions.PostNotFoundException;
-import techquack.com.onestar3gram.exceptions.UnauthorizedPostException;
+import techquack.com.onestar3gram.exceptions.*;
 import techquack.com.onestar3gram.services.PostService;
+import techquack.com.onestar3gram.services.storage.StorageService;
 
 import java.util.List;
 
@@ -49,7 +48,7 @@ public class PostController {
 
     @PostMapping(value = "", produces = "application/json")
     public @ResponseBody int sendPost(@RequestBody SendPostCommand sendPostCommand,
-                                      @AuthenticationPrincipal Jwt jwt) throws InvalidDescriptionException, FileNotFoundException, InvalidAltException {
+                                      @AuthenticationPrincipal Jwt jwt) throws InvalidDescriptionException, InvalidAltException, FileNotFoundException {
 
         MediaFile media = storageService.getMediaFile(sendPostCommand.getMediaId());
         String alt = sendPostCommand.getAlt();
@@ -61,7 +60,6 @@ public class PostController {
         if (postService.isAltInvalid(alt)) {
             throw new InvalidAltException("Too long text - must be less than 200 characters");
         }
-        MediaFile media = publicationDetail.getMedia();
         String creatorId = jwt.getSubject();
         return postService.createPost(media, alt, description, visibility, creatorId);
     }
@@ -85,14 +83,9 @@ public class PostController {
         postService.deletePost(postId);
     }
 
-    @PutMapping(value = "/like/add/{id}", produces = "application/json")
+    @PutMapping(value = "/like/{id}", produces = "application/json")
     public @ResponseBody Post likePost(@PathVariable(value = "id") int postId, @AuthenticationPrincipal Jwt jwt) throws PostNotFoundException {
-        return postService.addLike(postId, jwt.getSubject());
-    }
-
-    @PutMapping(value = "/like/remove/{id}", produces = "application/json")
-    public @ResponseBody Post unlikePost(@PathVariable(value = "id") int postId, @AuthenticationPrincipal Jwt jwt) throws PostNotFoundException, NegativeLikeNumberException {
-        return postService.removeLike(postId, jwt.getSubject());
+        return postService.like(postId, jwt.getSubject());
     }
 
 }
