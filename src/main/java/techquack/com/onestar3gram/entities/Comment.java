@@ -17,25 +17,12 @@ public class Comment {
     private String authorId;
     private String value;
     private Date postDate;
-    @OneToMany
-    private List<Comment> comments;
-
-    @ManyToOne
-    private Comment parent;
 
     @ElementCollection
     private List<String> likers = new ArrayList<>();
 
     public Integer getId() {
         return id;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public Comment getParent() {
-        return parent;
     }
 
     public String getAuthorId() { return authorId; }
