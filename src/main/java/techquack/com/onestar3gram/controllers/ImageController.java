@@ -29,7 +29,7 @@ public class ImageController {
         this.storageService = storageService;
     }
 
-    @GetMapping(value = "/")
+    @GetMapping(value = "")
     public List<MediaFile> getImages() { return  storageService.getAllImages(); }
 
     @GetMapping(value = "/{id}")
