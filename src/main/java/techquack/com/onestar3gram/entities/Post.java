@@ -12,7 +12,7 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     private String creatorId;
 
@@ -30,7 +30,7 @@ public class Post {
 
     private String alt;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 

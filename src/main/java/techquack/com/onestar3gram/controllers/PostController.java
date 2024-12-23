@@ -5,14 +5,14 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import techquack.com.onestar3gram.DTO.PostDTO;
-import techquack.com.onestar3gram.DTO.PublicationDetail;
+import techquack.com.onestar3gram.DTO.EditPostCommand;
+import techquack.com.onestar3gram.DTO.SendPostCommand;
 import techquack.com.onestar3gram.config.KeycloakRoles;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
-import techquack.com.onestar3gram.exceptions.InvalidDescriptionException;
-import techquack.com.onestar3gram.exceptions.PostNotFoundException;
-import techquack.com.onestar3gram.exceptions.UnauthorizedPostException;
+import techquack.com.onestar3gram.exceptions.*;
 import techquack.com.onestar3gram.services.PostService;
+import techquack.com.onestar3gram.services.storage.StorageService;
 
 import java.util.List;
 
@@ -21,9 +21,11 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final StorageService storageService;
 
-    public PostController(PostService postService) {
+    public PostController(PostService postService, StorageService storageService) {
         this.postService = postService;
+        this.storageService = storageService;
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
@@ -44,35 +46,45 @@ public class PostController {
         return postService.getDTOList(postService.getPublicPosts());
     }
 
-    @PostMapping(value = "/send", produces = "application/json")
-    public @ResponseBody Integer sendPost(@RequestBody PublicationDetail publicationDetail, @RequestParam("alt") String alt,
-                                          @RequestParam("description") String description,
-                                          @RequestParam("visibility") boolean visibility,
-                                          @AuthenticationPrincipal Jwt jwt) throws InvalidDescriptionException {
+    @PostMapping(value = "", produces = "application/json")
+    public @ResponseBody int sendPost(@RequestBody SendPostCommand sendPostCommand,
+                                      @AuthenticationPrincipal Jwt jwt) throws InvalidDescriptionException, InvalidAltException, FileNotFoundException {
+
+        MediaFile media = storageService.getMediaFile(sendPostCommand.getMediaId());
+        String alt = sendPostCommand.getAlt();
+        String description = sendPostCommand.getDescription();
+        boolean visibility = sendPostCommand.getVisibility();
         if (postService.isDescriptionInvalid(description)) {
             throw new InvalidDescriptionException("Too Long Text - must be less than 500 characters");
         }
-        MediaFile media = publicationDetail.getMedia();
+        if (postService.isAltInvalid(alt)) {
+            throw new InvalidAltException("Too long text - must be less than 200 characters");
+        }
         String creatorId = jwt.getSubject();
         return postService.createPost(media, alt, description, visibility, creatorId);
     }
 
-    @PutMapping(value = "/edit/{id}", produces = "application/json")
-    public @ResponseBody Post editPost(@PathVariable(value = "id") Integer postId, @RequestParam("alt") String alt, @RequestParam("description") String description, @RequestParam("visibility") boolean visibility) throws InvalidDescriptionException, PostNotFoundException {
+    @PutMapping(value = "/{id}", produces = "application/json")
+    public @ResponseBody Post editPost(@PathVariable(value = "id") int postId, @RequestBody EditPostCommand editPostCommand) throws InvalidDescriptionException, PostNotFoundException, InvalidAltException {
+        String alt = editPostCommand.getAlt();
+        String description = editPostCommand.getDescription();
+        Boolean visibility = editPostCommand.getVisibility();
         if (postService.isDescriptionInvalid(description)) {
-            throw new InvalidDescriptionException("Too Long Text - must be less than 500 characters");
+            throw new InvalidDescriptionException("Too long text - must be less than 500 characters");
+        }
+        if (postService.isAltInvalid(alt)) {
+            throw new InvalidAltException("Too long text - must be less than 200 characters");
         }
         return postService.updatePost(postId, alt, description, visibility);
     }
 
-    @DeleteMapping(value = "/delete/{id}", produces = "application/json")
-    public @ResponseBody void deletePost(@PathVariable(value = "id") Integer postId) {
+    @DeleteMapping(value = "/{id}", produces = "application/json")
+    public @ResponseBody void deletePost(@PathVariable(value = "id") int postId) {
         postService.deletePost(postId);
     }
 
     @PutMapping(value = "/like/{id}", produces = "application/json")
-    public @ResponseBody Post likePost(@PathVariable(value = "id") Integer postId,
-                                       @AuthenticationPrincipal Jwt jwt) throws PostNotFoundException {
+    public @ResponseBody Post likePost(@PathVariable(value = "id") int postId, @AuthenticationPrincipal Jwt jwt) throws PostNotFoundException {
         return postService.like(postId, jwt.getSubject());
     }
 

@@ -17,6 +17,8 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final int MAX_DESCRIPTION_LENGTH = 500;
+    private final int MAX_ALT_LENGTH = 200;
 
     private final AdminClientService adminClientService;
 
@@ -30,7 +32,7 @@ public class PostService {
         this.commentService = commentService;
     }
 
-    public Post getPost(Integer postId) throws PostNotFoundException {
+    public Post getPost(int postId) throws PostNotFoundException {
         return postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
     }
 
@@ -58,29 +60,39 @@ public class PostService {
         return post.getId();
     }
 
-    public Post updatePost(Integer postId, String alt, String description, boolean visibility) throws PostNotFoundException {
+    public Post updatePost(int postId, String alt, String description, Boolean visibility) throws PostNotFoundException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
-        post.setAlt(alt);
-        post.setDescription(description);
-        post.setPrivate(visibility);
+        if (alt != null) {
+            post.setAlt(alt);
+        }
+        if (description != null) {
+            post.setDescription(description);
+        }
+        if (visibility != null) {
+            post.setPrivate(visibility);
+        }
         postRepository.save(post);
         return post;
     }
 
-    public void deletePost(Integer postId) {
+    public void deletePost(int postId) {
         postRepository.deleteById(postId);
     }
 
-    public boolean isPostVisible(Integer postId) throws PostNotFoundException {
+    public boolean isPostVisible(int postId) throws PostNotFoundException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
         return post.isPrivate();
     }
 
     public boolean isDescriptionInvalid(String description) {
-        return description != null && description.length() > 500;
+        return description != null && description.length() > MAX_DESCRIPTION_LENGTH;
     }
 
-    public Post like(Integer postId, String userId) throws PostNotFoundException {
+    public boolean isAltInvalid(String alt) {
+        return alt != null && alt.length() > MAX_ALT_LENGTH;
+    }
+
+    public Post like(int postId, String userId) throws PostNotFoundException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
         if (post.getLikers().contains(userId)) {
             post.getLikers().remove(userId);
