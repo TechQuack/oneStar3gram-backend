@@ -1,48 +1,34 @@
-package techquack.com.onestar3gram.entities;
+package techquack.com.onestar3gram.DTO;
 
-import jakarta.persistence.*;
+import techquack.com.onestar3gram.entities.Comment;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "comment")
-public class Comment {
+public class CommentDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String authorId;
+    private String author;
     private String value;
     private Date postDate;
-    @OneToMany
     private List<Comment> comments;
 
-    @ManyToOne
     private Comment parent;
 
-    @ElementCollection
     private List<String> likers = new ArrayList<>();
 
     public Integer getId() {
         return id;
     }
 
-    public List<Comment> getComments() {
-        return comments;
+    public void setId(Integer id) { this.id = id; }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
-    public Comment getParent() {
-        return parent;
-    }
-
-    public String getAuthorId() { return authorId; }
-
-    public void setAuthorId(String authorId) {
-        this.authorId = authorId;
-        }
     public String getValue() {
         return value;
     }
@@ -59,9 +45,19 @@ public class Comment {
         this.postDate = postDate;
     }
 
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
     public int getLikeCount() {
         return likers.size();
     }
+
+    public void setLikers(List<String> likers) { this.likers = likers; }
 
     public List<String> getLikers() {
         return likers;
@@ -73,5 +69,13 @@ public class Comment {
 
     public void removeLike(String keycloakId) {
         this.likers.remove(keycloakId);
+    }
+
+    public Comment getParent() {
+        return parent;
+    }
+
+    public void setParent(Comment parent) {
+        this.parent = parent;
     }
 }

@@ -1,25 +1,20 @@
 package techquack.com.onestar3gram.controllers;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import techquack.com.onestar3gram.DTO.PostDTO;
+import techquack.com.onestar3gram.DTO.PublicationDetail;
 import techquack.com.onestar3gram.DTO.EditPostCommand;
 import techquack.com.onestar3gram.config.KeycloakRoles;
-import techquack.com.onestar3gram.entities.AppUser;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.InvalidDescriptionException;
-import techquack.com.onestar3gram.exceptions.NegativeLikeNumberException;
 import techquack.com.onestar3gram.exceptions.PostNotFoundException;
 import techquack.com.onestar3gram.exceptions.UnauthorizedPostException;
-import techquack.com.onestar3gram.exceptions.*;
-import techquack.com.onestar3gram.services.AppUserService;
 import techquack.com.onestar3gram.services.PostService;
-import techquack.com.onestar3gram.DTO.SendPostCommand;
-import techquack.com.onestar3gram.services.storage.StorageService;
 
-import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -27,38 +22,36 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-    private final AppUserService userService;
     private final StorageService storageService;
 
-    public PostController(PostService postService, AppUserService userService, StorageService storageService) {
+    public PostController(PostService postService, StorageService storageService) {
         this.postService = postService;
-        this.userService = userService;
         this.storageService = storageService;
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public @ResponseBody Post getPost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException, UnauthorizedPostException {
+    public @ResponseBody PostDTO getPost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException, UnauthorizedPostException {
         Post post = postService.getPost(postId);
         if (post.isPrivate() && !KeycloakRoles.hasRole(KeycloakRoles.ADMIN) && !KeycloakRoles.hasRole(KeycloakRoles.PRIVILEGED)) {
             throw new UnauthorizedPostException("error - impossible to see post");
         }
-        else return post;
+        else return postService.getDTO(post);
     }
 
     @GetMapping(value = "", produces = "application/json")
-    public @ResponseBody List<Post> getPosts() {
+    public @ResponseBody List<PostDTO> getPosts() {
         boolean canUserSeePrivatePosts = KeycloakRoles.hasRole(KeycloakRoles.ADMIN) || KeycloakRoles.hasRole(KeycloakRoles.PRIVILEGED);
         if (canUserSeePrivatePosts) {
-            return postService.getAllPosts();
+            return postService.getDTOList(postService.getAllPosts());
         }
-        return postService.getPublicPosts();
+        return postService.getDTOList(postService.getPublicPosts());
     }
 
     @PostMapping(value = "", produces = "application/json")
-    public @ResponseBody int sendPost(@RequestBody SendPostCommand sendPostCommand) throws InvalidDescriptionException, FileNotFoundException, InvalidAltException {
+    public @ResponseBody int sendPost(@RequestBody SendPostCommand sendPostCommand,
+                                      @AuthenticationPrincipal Jwt jwt) throws InvalidDescriptionException, FileNotFoundException, InvalidAltException {
 
         MediaFile media = storageService.getMediaFile(sendPostCommand.getMediaId());
-        AppUser creator = userService.getUserById(sendPostCommand.getCreatorId());
         String alt = sendPostCommand.getAlt();
         String description = sendPostCommand.getDescription();
         boolean visibility = sendPostCommand.getVisibility();
@@ -68,7 +61,9 @@ public class PostController {
         if (postService.isAltInvalid(alt)) {
             throw new InvalidAltException("Too long text - must be less than 200 characters");
         }
-        return postService.createPost(media, alt, description, visibility, creator);
+        MediaFile media = publicationDetail.getMedia();
+        String creatorId = jwt.getSubject();
+        return postService.createPost(media, alt, description, visibility, creatorId);
     }
 
     @PutMapping(value = "/{id}", produces = "application/json")
@@ -91,13 +86,13 @@ public class PostController {
     }
 
     @PutMapping(value = "/like/add/{id}", produces = "application/json")
-    public @ResponseBody Post likePost(@PathVariable(value = "id") int postId) throws PostNotFoundException {
-        return postService.addLike(postId);
+    public @ResponseBody Post likePost(@PathVariable(value = "id") int postId, @AuthenticationPrincipal Jwt jwt) throws PostNotFoundException {
+        return postService.addLike(postId, jwt.getSubject());
     }
 
     @PutMapping(value = "/like/remove/{id}", produces = "application/json")
-    public @ResponseBody Post unlikePost(@PathVariable(value = "id") int postId) throws PostNotFoundException, NegativeLikeNumberException {
-        return postService.removeLike(postId);
+    public @ResponseBody Post unlikePost(@PathVariable(value = "id") int postId, @AuthenticationPrincipal Jwt jwt) throws PostNotFoundException, NegativeLikeNumberException {
+        return postService.removeLike(postId, jwt.getSubject());
     }
 
 }

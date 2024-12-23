@@ -2,12 +2,16 @@ package techquack.com.onestar3gram.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import techquack.com.onestar3gram.DTO.CommentDTO;
 import techquack.com.onestar3gram.entities.Comment;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.comment.CommentInvalidException;
 import techquack.com.onestar3gram.exceptions.utils.EmptyException;
 import techquack.com.onestar3gram.exceptions.post.PostInvalidException;
 import techquack.com.onestar3gram.repositories.CommentRepository;
+import techquack.com.onestar3gram.repositories.PostRepository;
+
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -15,6 +19,12 @@ public class CommentService {
 
     @Autowired
     CommentRepository commentRepository;
+
+    @Autowired
+    PostRepository postRepository;
+
+    @Autowired
+    AdminClientService adminClientService;
 
     public Comment getCommentById(int id) {
         Comment c = this.commentRepository.findOneById(id);
@@ -31,15 +41,8 @@ public class CommentService {
         return post.getComments();
     }
 
-    public Post getPostFromComment(Comment comment) throws CommentInvalidException {
-        if (comment == null) {
-            throw new CommentInvalidException();
-        }
+    public Comment createComment(Post post, String value, String userId) throws EmptyException, PostInvalidException {
 
-        return comment.getPost();
-    }
-
-    public Comment createComment(Post post, String value) throws EmptyException, PostInvalidException {
         if (post == null) {
             throw new PostInvalidException();
         }
@@ -49,10 +52,14 @@ public class CommentService {
         }
 
         Comment c = new Comment();
-        c.setPost(post);
+        c.setPostDate(new Date());
         c.setValue(value);
-
+        c.setAuthorId(userId);
         this.commentRepository.save(c);
+
+        post.addComment(c);
+        this.postRepository.save(post);
+
         return c;
     }
 
@@ -73,17 +80,52 @@ public class CommentService {
             throw new CommentInvalidException();
         }
 
+        Post p = this.postRepository.findByCommentId(comment.getId());
+
+        if (p == null) {
+            throw new PostInvalidException();
+        }
+
+        p.removeComment(comment);
         this.commentRepository.delete(comment);
+        this.postRepository.save(p);
         return comment;
     }
 
-    public Comment likeComment(Comment comment) throws CommentInvalidException {
+    public Comment likeComment(Comment comment, String userId) throws CommentInvalidException {
         if (comment == null) {
             throw new CommentInvalidException();
         }
-
-        comment.setLikeCount(comment.getLikeCount() + 1);
+        if (comment.getLikers().contains(userId)) {
+            comment.removeLike(userId);
+        } else {
+            comment.addLike(userId);
+        }
         this.commentRepository.save(comment);
         return comment;
+    }
+
+    public List<CommentDTO> getListDTO(List<Comment> comments) {
+        return comments.stream()
+                .map(this::getDTO)
+                .toList();
+    }
+
+    public CommentDTO getDTO(Comment comment) {
+        CommentDTO dto = new CommentDTO();
+        dto.setAuthor(adminClientService.searchByKeycloakId(comment.getAuthorId()).get(0).getUsername());
+        dto.setId(comment.getId());
+        dto.setParent(comment.getParent());
+        dto.setValue(comment.getValue());
+        dto.setPostDate(comment.getPostDate());
+        dto.setComments(comment.getComments());
+        dto.setLikers(getUsers(comment.getLikers()));
+        return dto;
+    }
+
+    private List<String> getUsers(List<String> likers) {
+       return likers.stream()
+                    .map(id -> adminClientService.searchByKeycloakId(id).get(0).getUsername())
+                    .toList();
     }
 }
