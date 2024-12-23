@@ -1,29 +1,26 @@
-package techquack.com.onestar3gram.entities;
+package techquack.com.onestar3gram.DTO;
 
-import jakarta.persistence.*;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import techquack.com.onestar3gram.entities.MediaFile;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "post")
-public class Post {
+public class PostDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String creatorId;
+    private String creator;
 
     private Date postDate;
     private String description;
     private boolean isPrivate;
 
-    @ElementCollection
-    private List<String> likers = new ArrayList<>();
+    private final List<String> likers = new ArrayList<>();
     @OneToMany
-    private List<Comment> comments;
+    private List<CommentDTO> comments;
 
     @OneToOne
     private MediaFile media;
@@ -34,12 +31,18 @@ public class Post {
         return id;
     }
 
-    public String getCreatorId() {
-        return creatorId;
+    public void setId(Integer id) { this.id = id; }
+
+    public String getCreator() {
+        return creator;
     }
 
-    public void setCreatorId(String creatorId) {
-        this.creatorId = creatorId;
+    public void setComments(List<CommentDTO> comments) {
+        this.comments = comments;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public Date getPostDate() {
@@ -66,16 +69,8 @@ public class Post {
         isPrivate = aPrivate;
     }
 
-    public List<Comment> getComments() {
+    public List<CommentDTO> getComments() {
         return comments;
-    }
-
-    public void addComment(Comment comment) {
-        this.comments.add(comment);
-    }
-
-    public void removeComment(Comment comment) {
-        this.comments.remove(comment);
     }
 
     public MediaFile getMedia() {
@@ -102,11 +97,4 @@ public class Post {
         return likers;
     }
 
-    public void addLike(String keycloakId) {
-        this.likers.add(keycloakId);
-    }
-
-    public void removeLike(String keycloakId) {
-        this.likers.remove(keycloakId);
-    }
 }
