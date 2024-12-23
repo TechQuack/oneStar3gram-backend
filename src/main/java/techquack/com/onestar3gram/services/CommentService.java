@@ -115,10 +115,8 @@ public class CommentService {
         CommentDTO dto = new CommentDTO();
         dto.setAuthor(adminClientService.searchByKeycloakId(comment.getAuthorId()).get(0).getUsername());
         dto.setId(comment.getId());
-        dto.setParent(comment.getParent());
         dto.setValue(comment.getValue());
         dto.setPostDate(comment.getPostDate());
-        dto.setComments(comment.getComments());
         dto.setLikers(getUsers(comment.getLikers()));
         return dto;
     }
