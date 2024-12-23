@@ -28,7 +28,7 @@ public class VideoController {
     public VideoController(FileSystemStorageService fileSystemStorageService) {
         this.storageService = fileSystemStorageService;
     }
-    @GetMapping(value = "/")
+    @GetMapping(value = "")
     public List<MediaFile> getVideos() {
         return storageService.getAllVideos();
     }
