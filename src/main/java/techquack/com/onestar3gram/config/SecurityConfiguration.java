@@ -56,7 +56,7 @@ public class SecurityConfiguration {
             requests.requestMatchers(HttpMethod.GET, "comments/*").permitAll();
             requests.requestMatchers(HttpMethod.DELETE, "comments/*").authenticated();
             //Image:
-            requests.requestMatchers(HttpMethod.GET,"/image/").permitAll();
+            requests.requestMatchers(HttpMethod.GET,"/image").permitAll();
             requests.requestMatchers(HttpMethod.GET,"/image/download/*").permitAll();
             requests.requestMatchers(HttpMethod.POST,"/image/upload").hasAuthority(KeycloakRoles.ADMIN.getRole());
             requests.requestMatchers(HttpMethod.GET,"/image/*").permitAll();
@@ -68,7 +68,7 @@ public class SecurityConfiguration {
             requests.requestMatchers(HttpMethod.PUT, "/post/like/*").authenticated();
             requests.requestMatchers(HttpMethod.GET,"/post/*").permitAll();
             //Video:
-            requests.requestMatchers(HttpMethod.GET, "/video/").permitAll();
+            requests.requestMatchers(HttpMethod.GET, "/video").permitAll();
             requests.requestMatchers(HttpMethod.GET, "video/download/*").permitAll();
             requests.requestMatchers(HttpMethod.POST,"/video/upload").hasAuthority(KeycloakRoles.ADMIN.getRole());
             requests.requestMatchers(HttpMethod.GET, "/uploads/*").permitAll();
