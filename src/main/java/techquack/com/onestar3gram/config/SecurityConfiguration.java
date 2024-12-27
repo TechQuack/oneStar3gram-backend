@@ -50,7 +50,7 @@ public class SecurityConfiguration {
             //Comment:
             requests.requestMatchers(HttpMethod.GET,"/post/*/comments").permitAll();
             requests.requestMatchers(HttpMethod.GET,"/comment/*/post").permitAll();
-            requests.requestMatchers(HttpMethod.POST,"/post/*/comments/value/*").authenticated();
+            requests.requestMatchers(HttpMethod.POST,"/post/*/comments/value").authenticated();
             requests.requestMatchers(HttpMethod.PUT,"/comment/*/value/*").authenticated();
             requests.requestMatchers(HttpMethod.PUT,"/comment/*/like").authenticated();
             requests.requestMatchers(HttpMethod.GET, "/comment/*").permitAll();

@@ -36,8 +36,8 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.OK).body(commentService.getListDTO(comments));
     }
 
-    @PostMapping(value = "post/{postId}/comments/value/{value}", produces = "application/json")
-    public ResponseEntity<Comment> postComment(@PathVariable int postId, @PathVariable String value,
+    @PostMapping(value = "post/{postId}/comments/value", produces = "application/json")
+    public ResponseEntity<Comment> postComment(@PathVariable int postId, @RequestBody String value,
                                                @AuthenticationPrincipal Jwt jwt) {
         String userId = jwt.getSubject();
         Comment c = this.commentService.createComment(postRepository.findOneById(postId), value, userId);
