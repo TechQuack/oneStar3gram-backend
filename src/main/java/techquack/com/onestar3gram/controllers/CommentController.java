@@ -23,20 +23,20 @@ public class CommentController {
     @Autowired
     CommentService commentService;
 
-    @GetMapping(value="comments/{commentId}", produces = "application/json")
+    @GetMapping(value="comment/{commentId}", produces = "application/json")
     public ResponseEntity<CommentDTO> getCommentById(@PathVariable int commentId) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 commentService.getDTO(commentService.getCommentById(commentId)));
     }
 
-    @GetMapping(value="posts/{postId}/comments", produces = "application/json")
+    @GetMapping(value="post/{postId}/comments", produces = "application/json")
     public ResponseEntity<List<CommentDTO>> getPostComments(@PathVariable int postId) {
         Post p = this.postRepository.findOneById(postId);
         List<Comment> comments = this.commentService.getPostComments(p);
         return ResponseEntity.status(HttpStatus.OK).body(commentService.getListDTO(comments));
     }
 
-    @PostMapping(value = "posts/{postId}/comments/value/{value}", produces = "application/json")
+    @PostMapping(value = "post/{postId}/comments/value/{value}", produces = "application/json")
     public ResponseEntity<Comment> postComment(@PathVariable int postId, @PathVariable String value,
                                                @AuthenticationPrincipal Jwt jwt) {
         String userId = jwt.getSubject();
@@ -44,14 +44,14 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(c);
     }
 
-    @PutMapping(value = "comments/{commentId}/value/{value}", produces = "application/json")
+    @PutMapping(value = "comment/{commentId}/value/{value}", produces = "application/json")
     public ResponseEntity<Comment> putComment(@PathVariable int commentId, @PathVariable String value) {
         Comment c = this.commentService.getCommentById(commentId);
         c = this.commentService.updateComment(c, value);
         return ResponseEntity.status(HttpStatus.OK).body(c);
     }
 
-    @PutMapping(value = "comments/{commentId}/like", produces = "application/json")
+    @PutMapping(value = "comment/{commentId}/like", produces = "application/json")
     public ResponseEntity<Comment> putLike(@PathVariable int commentId,
                                            @AuthenticationPrincipal Jwt jwt) {
         Comment c = this.commentService.getCommentById(commentId);
@@ -59,7 +59,7 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.OK).body(c);
     }
 
-    @DeleteMapping(value = "comments/{commentId}", produces = "application/json")
+    @DeleteMapping(value = "comment/{commentId}", produces = "application/json")
     public ResponseEntity<Comment> deleteComment(@PathVariable int commentId) {
         Comment c = this.commentService.getCommentById(commentId);
         c = this.commentService.deleteComment(c);

@@ -48,13 +48,13 @@ public class SecurityConfiguration {
             requests.requestMatchers(HttpMethod.DELETE,"/user/delete/*").authenticated();
             requests.requestMatchers(HttpMethod.GET,"/user/*").permitAll();
             //Comment:
-            requests.requestMatchers(HttpMethod.GET,"posts/*/comments").permitAll();
-            requests.requestMatchers(HttpMethod.GET,"comments/*/post").permitAll();
-            requests.requestMatchers(HttpMethod.POST,"post/*/comments/value/*").authenticated();
-            requests.requestMatchers(HttpMethod.PUT,"comments/*/value/*").authenticated();
-            requests.requestMatchers(HttpMethod.PUT,"comments/*/like").authenticated();
-            requests.requestMatchers(HttpMethod.GET, "comments/*").permitAll();
-            requests.requestMatchers(HttpMethod.DELETE, "comments/*").authenticated();
+            requests.requestMatchers(HttpMethod.GET,"/post/*/comments").permitAll();
+            requests.requestMatchers(HttpMethod.GET,"/comment/*/post").permitAll();
+            requests.requestMatchers(HttpMethod.POST,"/post/*/comments/value/*").authenticated();
+            requests.requestMatchers(HttpMethod.PUT,"/comment/*/value/*").authenticated();
+            requests.requestMatchers(HttpMethod.PUT,"/comment/*/like").authenticated();
+            requests.requestMatchers(HttpMethod.GET, "/comment/*").permitAll();
+            requests.requestMatchers(HttpMethod.DELETE, "/comment/*").authenticated();
             //Image:
             requests.requestMatchers(HttpMethod.GET,"/image").permitAll();
             requests.requestMatchers(HttpMethod.GET,"/image/download/*").permitAll();
