@@ -14,4 +14,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query("SELECT p FROM Post p WHERE :id MEMBER OF p.comments")
     Post findByCommentId(Integer id);
+
+    List<Post> findByCreatorId(String creatorId);
 }
