@@ -46,6 +46,11 @@ public class PostController {
         return postService.getDTOList(postService.getPublicPosts());
     }
 
+    @GetMapping(value = "/self", produces = "application/json")
+    public @ResponseBody List<PostDTO> getSelfPosts(@AuthenticationPrincipal Jwt jwt) {
+        return postService.getDTOList(postService.getUserPosts(jwt.getSubject()));
+    }
+
     @PostMapping(value = "", produces = "application/json")
     public @ResponseBody int sendPost(@RequestBody SendPostCommand sendPostCommand,
                                       @AuthenticationPrincipal Jwt jwt) throws InvalidDescriptionException, InvalidAltException, FileNotFoundException {

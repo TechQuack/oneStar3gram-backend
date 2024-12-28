@@ -48,6 +48,10 @@ public class PostService {
         return postRepository.findAll().stream().filter(Post::isPrivate).toList();
     }
 
+    public List<Post> getUserPosts(String creatorId) {
+        return postRepository.findByCreatorId(creatorId);
+    }
+
     public Integer createPost(MediaFile media, String alt, String description, boolean visibility, String creatorId) {
         Post post = new Post();
         post.setMedia(media);
