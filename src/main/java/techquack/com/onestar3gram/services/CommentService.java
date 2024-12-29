@@ -75,12 +75,12 @@ public class CommentService {
         return comment;
     }
 
-    public Comment deleteComment(Comment comment) throws CommentInvalidException {
+    public void deleteComment(Comment comment) throws CommentInvalidException {
         if (comment == null) {
             throw new CommentInvalidException();
         }
 
-        Post p = this.postRepository.findByCommentId(comment.getId());
+        Post p = this.postRepository.findOneByCommentsIsContaining(comment);
 
         if (p == null) {
             throw new PostInvalidException();
@@ -89,7 +89,6 @@ public class CommentService {
         p.removeComment(comment);
         this.commentRepository.delete(comment);
         this.postRepository.save(p);
-        return comment;
     }
 
     public Comment likeComment(Comment comment, String userId) throws CommentInvalidException {
