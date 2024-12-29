@@ -7,12 +7,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import techquack.com.onestar3gram.DTO.CommentDTO;
+import techquack.com.onestar3gram.config.KeycloakRoles;
 import techquack.com.onestar3gram.entities.Comment;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.repositories.PostRepository;
 import techquack.com.onestar3gram.services.CommentService;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 public class CommentController {
@@ -60,9 +62,12 @@ public class CommentController {
     }
 
     @DeleteMapping(value = "comment/{commentId}", produces = "application/json")
-    public ResponseEntity<CommentDTO> deleteComment(@PathVariable int commentId) {
+    public ResponseEntity<Void> deleteComment(@PathVariable int commentId, @AuthenticationPrincipal Jwt jwt) {
         Comment c = this.commentService.getCommentById(commentId);
-        c = this.commentService.deleteComment(c);
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.getDTO(c));
+        if (!Objects.equals(c.getAuthorId(), jwt.getSubject()) || !jwt.getClaims().containsValue(KeycloakRoles.ADMIN)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        this.commentService.deleteComment(c);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
