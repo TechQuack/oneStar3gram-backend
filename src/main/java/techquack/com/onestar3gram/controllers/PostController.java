@@ -46,9 +46,13 @@ public class PostController {
         return postService.getDTOList(postService.getPublicPosts());
     }
 
-    @GetMapping(value = "/self", produces = "application/json")
-    public @ResponseBody List<PostDTO> getSelfPosts(@AuthenticationPrincipal Jwt jwt) {
-        return postService.getDTOList(postService.getUserPosts(jwt.getSubject()));
+    @GetMapping(value = "author/{username}", produces = "application/json")
+    public @ResponseBody List<PostDTO> getUserPosts(@PathVariable String username) {
+        boolean canUserSeePrivatePosts = KeycloakRoles.hasRole(KeycloakRoles.ADMIN) || KeycloakRoles.hasRole(KeycloakRoles.PRIVILEGED);
+        if (canUserSeePrivatePosts) {
+            return postService.getDTOList(postService.getUserPosts(username));
+        }
+        return postService.getDTOList(postService.getUserPublicPosts(username));
     }
 
     @PostMapping(value = "", produces = "application/json")

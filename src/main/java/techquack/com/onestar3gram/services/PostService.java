@@ -48,8 +48,18 @@ public class PostService {
         return postRepository.findAll().stream().filter(Post::isPrivate).toList();
     }
 
-    public List<Post> getUserPosts(String creatorId) {
-        return postRepository.findByCreatorId(creatorId);
+    public List<Post> getUserPosts(String username) {
+        return postRepository.findAll().stream().filter((p) -> {
+            String author = adminClientService.searchByKeycloakId(p.getCreatorId()).get(0).getUsername();
+            return username.equals(author);
+        }).toList();
+    }
+
+    public List<Post> getUserPublicPosts(String username) {
+        return postRepository.findAll().stream().filter((p) -> {
+            String author = adminClientService.searchByKeycloakId(p.getCreatorId()).get(0).getUsername();
+            return !p.isPrivate() && username.equals(author);
+        }).toList();
     }
 
     public Integer createPost(MediaFile media, String alt, String description, boolean visibility, String creatorId) {
