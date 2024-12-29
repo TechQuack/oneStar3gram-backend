@@ -37,32 +37,32 @@ public class CommentController {
     }
 
     @PostMapping(value = "post/{postId}/comments/value", produces = "application/json")
-    public ResponseEntity<Comment> postComment(@PathVariable int postId, @RequestBody String value,
+    public ResponseEntity<CommentDTO> postComment(@PathVariable int postId, @RequestBody String value,
                                                @AuthenticationPrincipal Jwt jwt) {
         String userId = jwt.getSubject();
         Comment c = this.commentService.createComment(postRepository.findOneById(postId), value, userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(c);
+        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.getDTO(c));
     }
 
     @PutMapping(value = "comment/{commentId}/value/{value}", produces = "application/json")
-    public ResponseEntity<Comment> putComment(@PathVariable int commentId, @PathVariable String value) {
+    public ResponseEntity<CommentDTO> putComment(@PathVariable int commentId, @PathVariable String value) {
         Comment c = this.commentService.getCommentById(commentId);
         c = this.commentService.updateComment(c, value);
-        return ResponseEntity.status(HttpStatus.OK).body(c);
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.getDTO(c));
     }
 
     @PutMapping(value = "comment/{commentId}/like", produces = "application/json")
-    public ResponseEntity<Comment> putLike(@PathVariable int commentId,
+    public ResponseEntity<CommentDTO> putLike(@PathVariable int commentId,
                                            @AuthenticationPrincipal Jwt jwt) {
         Comment c = this.commentService.getCommentById(commentId);
         c = this.commentService.likeComment(c, jwt.getSubject());
-        return ResponseEntity.status(HttpStatus.OK).body(c);
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.getDTO(c));
     }
 
     @DeleteMapping(value = "comment/{commentId}", produces = "application/json")
-    public ResponseEntity<Comment> deleteComment(@PathVariable int commentId) {
+    public ResponseEntity<CommentDTO> deleteComment(@PathVariable int commentId) {
         Comment c = this.commentService.getCommentById(commentId);
         c = this.commentService.deleteComment(c);
-        return ResponseEntity.status(HttpStatus.OK).body(c);
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.getDTO(c));
     }
 }

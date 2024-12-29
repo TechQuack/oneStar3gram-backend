@@ -98,10 +98,11 @@ public class PostService {
 
     public Post like(int postId, String userId) throws PostNotFoundException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
-        if (post.getLikers().contains(userId)) {
-            post.getLikers().remove(userId);
+        String username = adminClientService.searchByKeycloakId(userId).get(0).getUsername();
+        if (post.getLikers().contains(username)) {
+            post.getLikers().remove(username);
         } else {
-            post.getLikers().add(userId);
+            post.getLikers().add(username);
         }
         postRepository.save(post);
         return post;
@@ -116,6 +117,7 @@ public class PostService {
         dto.setPostDate(post.getPostDate());
         dto.setMedia(post.getMedia());
         dto.setComments(getCommentsDTO(post.getComments()));
+        dto.setLikers(post.getLikers());
         dto.setCreator(adminClientService.searchByKeycloakId(post.getCreatorId()).get(0).getUsername());
         return dto;
     }

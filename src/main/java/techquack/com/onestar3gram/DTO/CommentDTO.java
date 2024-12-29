@@ -45,15 +45,5 @@ public class CommentDTO {
 
     public void setLikers(List<String> likers) { this.likers = likers; }
 
-    public List<String> getLikers() {
-        return likers;
-    }
-
-    public void addLike(String keycloakId) {
-        this.likers.add(keycloakId);
-    }
-
-    public void removeLike(String keycloakId) {
-        this.likers.remove(keycloakId);
-    }
+    public List<String> getLikers() { return likers; }
 }

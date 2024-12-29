@@ -18,7 +18,7 @@ public class PostDTO {
     private String description;
     private boolean isPrivate;
 
-    private final List<String> likers = new ArrayList<>();
+    private List<String> likers = new ArrayList<>();
     @OneToMany
     private List<CommentDTO> comments;
 
@@ -96,5 +96,6 @@ public class PostDTO {
     public List<String> getLikers() {
         return likers;
     }
+    public void setLikers(List<String> likers) { this.likers = likers; }
 
 }

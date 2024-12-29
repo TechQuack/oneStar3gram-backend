@@ -70,7 +70,7 @@ public class PostController {
     }
 
     @PutMapping(value = "/{id}", produces = "application/json")
-    public @ResponseBody Post editPost(@PathVariable(value = "id") int postId, @RequestBody EditPostCommand editPostCommand) throws InvalidDescriptionException, PostNotFoundException, InvalidAltException {
+    public @ResponseBody PostDTO editPost(@PathVariable(value = "id") int postId, @RequestBody EditPostCommand editPostCommand) throws InvalidDescriptionException, PostNotFoundException, InvalidAltException {
         String alt = editPostCommand.getAlt();
         String description = editPostCommand.getDescription();
         Boolean visibility = editPostCommand.getVisibility();
@@ -80,7 +80,7 @@ public class PostController {
         if (postService.isAltInvalid(alt)) {
             throw new InvalidAltException("Too long text - must be less than 200 characters");
         }
-        return postService.updatePost(postId, alt, description, visibility);
+        return postService.getDTO(postService.updatePost(postId, alt, description, visibility));
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/json")
@@ -89,8 +89,8 @@ public class PostController {
     }
 
     @PutMapping(value = "/like/{id}", produces = "application/json")
-    public @ResponseBody Post likePost(@PathVariable(value = "id") int postId, @AuthenticationPrincipal Jwt jwt) throws PostNotFoundException {
-        return postService.like(postId, jwt.getSubject());
+    public @ResponseBody PostDTO likePost(@PathVariable(value = "id") int postId, @AuthenticationPrincipal Jwt jwt) throws PostNotFoundException {
+        return postService.getDTO(postService.like(postId, jwt.getSubject()));
     }
 
 }
