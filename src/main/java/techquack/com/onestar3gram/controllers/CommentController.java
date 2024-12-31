@@ -62,10 +62,10 @@ public class CommentController {
     }
 
     @DeleteMapping(value = "comment/{commentId}", produces = "application/json")
-    public ResponseEntity<String> deleteComment(@PathVariable int commentId, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<Void> deleteComment(@PathVariable int commentId, @AuthenticationPrincipal Jwt jwt) {
         Comment c = this.commentService.getCommentById(commentId);
         if (!Objects.equals(c.getAuthorId(), jwt.getSubject()) && !KeycloakRoles.hasRole(KeycloakRoles.ADMIN)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(jwt.getClaims().toString());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         this.commentService.deleteComment(c);
         return ResponseEntity.status(HttpStatus.OK).build();
