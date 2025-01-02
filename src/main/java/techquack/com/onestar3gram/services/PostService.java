@@ -7,8 +7,10 @@ import techquack.com.onestar3gram.DTO.PostDTO;
 import techquack.com.onestar3gram.entities.Comment;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
+import techquack.com.onestar3gram.exceptions.FileNotFoundException;
 import techquack.com.onestar3gram.exceptions.PostNotFoundException;
 import techquack.com.onestar3gram.repositories.PostRepository;
+import techquack.com.onestar3gram.services.storage.StorageService;
 
 import java.util.Date;
 import java.util.List;
@@ -24,12 +26,15 @@ public class PostService {
 
     private final CommentService commentService;
 
+    private final StorageService storageService;
+
     @Autowired
     public PostService(PostRepository postRepository, AdminClientService adminClientService,
-                       CommentService commentService) {
+                       CommentService commentService, StorageService storageService) {
         this.adminClientService = adminClientService;
         this.postRepository = postRepository;
         this.commentService = commentService;
+        this.storageService = storageService;
     }
 
     public Post getPost(int postId) throws PostNotFoundException {
@@ -89,7 +94,12 @@ public class PostService {
         return post;
     }
 
-    public void deletePost(int postId) {
+    public void deletePost(int postId) throws PostNotFoundException, FileNotFoundException {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
+        int id = post.getMedia().getId();
+        post.setMedia(null);
+        postRepository.save(post);
+        storageService.deleteFile(id);
         postRepository.deleteById(postId);
     }
 

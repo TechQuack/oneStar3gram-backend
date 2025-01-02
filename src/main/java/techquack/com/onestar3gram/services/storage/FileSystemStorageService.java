@@ -91,6 +91,10 @@ public class FileSystemStorageService implements StorageService {
         if (!mediaFileRepository.existsById(id)) {
             throw new FileNotFoundException("File not found");
         }
+        File file = getFile(id);
+        if(!file.delete()) {
+            throw new FileNotFoundException("Impossible to delete");
+        }
         mediaFileRepository.deleteById(id);
     }
 
