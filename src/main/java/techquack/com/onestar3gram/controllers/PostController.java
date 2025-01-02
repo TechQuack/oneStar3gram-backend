@@ -88,7 +88,7 @@ public class PostController {
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/json")
-    public @ResponseBody void deletePost(@PathVariable(value = "id") int postId) {
+    public @ResponseBody void deletePost(@PathVariable(value = "id") int postId) throws PostNotFoundException, FileNotFoundException {
         postService.deletePost(postId);
     }
 
