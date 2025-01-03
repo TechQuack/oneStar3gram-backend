@@ -12,7 +12,15 @@ import java.time.LocalDateTime;
 public class PostExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(PostInvalidException.class)
-    public ResponseEntity<ErrorEntity> postNotFoundHandler(PostInvalidException exception) {
+    public ResponseEntity<ErrorEntity> postInvalidHandler(PostInvalidException exception) {
+        ErrorEntity error = new ErrorEntity(LocalDateTime.now());
+        error.setHttpStatus(HttpStatus.NOT_FOUND.value());
+        error.setMessage(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(error);
+    }
+
+    @ExceptionHandler(PostNotFoundException.class)
+    public ResponseEntity<ErrorEntity> postNotFoundHandler(PostNotFoundException exception) {
         ErrorEntity error = new ErrorEntity(LocalDateTime.now());
         error.setHttpStatus(HttpStatus.NOT_FOUND.value());
         error.setMessage(exception.getMessage());

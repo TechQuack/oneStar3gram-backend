@@ -11,6 +11,10 @@ import techquack.com.onestar3gram.config.KeycloakRoles;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.*;
+import techquack.com.onestar3gram.exceptions.post.InvalidAltException;
+import techquack.com.onestar3gram.exceptions.post.InvalidDescriptionException;
+import techquack.com.onestar3gram.exceptions.post.PostNotFoundException;
+import techquack.com.onestar3gram.exceptions.post.UnauthorizedPostException;
 import techquack.com.onestar3gram.services.PostService;
 import techquack.com.onestar3gram.services.storage.StorageService;
 

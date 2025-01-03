@@ -8,7 +8,7 @@ import techquack.com.onestar3gram.entities.Comment;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.FileNotFoundException;
-import techquack.com.onestar3gram.exceptions.PostNotFoundException;
+import techquack.com.onestar3gram.exceptions.post.PostNotFoundException;
 import techquack.com.onestar3gram.repositories.PostRepository;
 import techquack.com.onestar3gram.services.storage.StorageService;
 
