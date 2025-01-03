@@ -133,7 +133,7 @@ public class PostService {
         dto.setId(post.getId());
         dto.setAlt(post.getAlt());
         dto.setDescription(post.getDescription());
-        dto.setPrivate(post.isPrivate());
+        dto.setIsPrivate(post.isPrivate());
         dto.setPostDate(post.getPostDate());
         dto.setMedia(post.getMedia());
         dto.setComments(getCommentsDTO(post.getComments()));
