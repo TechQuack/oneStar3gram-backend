@@ -63,7 +63,7 @@ public class PostService {
         }).toList();
     }
 
-    public Integer createPost(MediaFile media, String alt, String description, boolean visibility, String creatorId) {
+    public int createPost(MediaFile media, String alt, String description, boolean visibility, String creatorId) {
         Post post = new Post();
         post.setMedia(media);
         post.setAlt(alt);
