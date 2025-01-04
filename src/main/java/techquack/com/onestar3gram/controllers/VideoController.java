@@ -1,7 +1,9 @@
 package techquack.com.onestar3gram.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import techquack.com.onestar3gram.DTO.MediaFileDTO;
+import techquack.com.onestar3gram.DTO.PostDTO;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.exceptions.media.FileNotFoundException;
 import techquack.com.onestar3gram.exceptions.media.StorageException;
@@ -35,8 +39,10 @@ public class VideoController {
 
     @Operation(summary = "Get videos")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Videos found",
-                    content = { @Content(mediaType = "application/json")})})
+            @ApiResponse(responseCode = "200", description = "Found the videos",
+                    content = { @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = MediaFile.class))) }),
+    })
     @GetMapping(value = "")
     public ResponseEntity<List<MediaFile>> getVideos() {
         return  ResponseEntity.status(HttpStatus.OK).body(storageService.getAllVideos()); }
@@ -44,7 +50,8 @@ public class VideoController {
     @Operation(summary = "Get video by its id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Video found",
-                    content = { @Content(mediaType = "application/json")}),
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MediaFileDTO.class)) }),
             @ApiResponse(responseCode = "404", description = "Video was not found with this id",
                     content = @Content)})
     @GetMapping(value = "/{id}")
@@ -55,7 +62,8 @@ public class VideoController {
     @Operation(summary = "Download a video")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Video downloaded",
-                    content = { @Content(mediaType = "application/json")}),
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StreamingResponseBody.class)) }),
             @ApiResponse(responseCode = "404", description = "Video was not found with this id",
                     content = @Content)})
     @GetMapping(value = "/download/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -75,7 +83,8 @@ public class VideoController {
     @Operation(summary = "Upload a video")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Image deleted",
-                    content = { @Content(mediaType = "application/json")}),
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MediaFileDTO.class)) }),
             @ApiResponse(responseCode = "500", description = "Error in storage",
                     content = @Content)})
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

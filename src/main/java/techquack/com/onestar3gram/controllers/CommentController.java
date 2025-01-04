@@ -1,6 +1,7 @@
 package techquack.com.onestar3gram.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import techquack.com.onestar3gram.DTO.CommentDTO;
 import techquack.com.onestar3gram.config.KeycloakRoles;
 import techquack.com.onestar3gram.entities.Comment;
+import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.entities.Post;
 import techquack.com.onestar3gram.exceptions.comment.CommentInvalidException;
 import techquack.com.onestar3gram.exceptions.comment.CommentNotFoundException;
@@ -51,7 +53,7 @@ public class CommentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the comments with the post id",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CommentDTO.class)) }),
+                            array = @ArraySchema(schema = @Schema(implementation = CommentDTO.class))) }),
             @ApiResponse(responseCode = "400", description = "Invalid post id",
                     content = @Content) })
     @GetMapping(value="post/{postId}/comments", produces = "application/json")
