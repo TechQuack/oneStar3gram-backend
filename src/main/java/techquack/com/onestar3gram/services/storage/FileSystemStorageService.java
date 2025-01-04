@@ -6,8 +6,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import techquack.com.onestar3gram.entities.MediaFile;
-import techquack.com.onestar3gram.exceptions.FileNotFoundException;
-import techquack.com.onestar3gram.exceptions.StorageException;
+import techquack.com.onestar3gram.exceptions.media.FileNotFoundException;
+import techquack.com.onestar3gram.exceptions.media.StorageException;
 import techquack.com.onestar3gram.repositories.MediaFileRepository;
 
 import java.io.File;

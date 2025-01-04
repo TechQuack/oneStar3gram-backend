@@ -1,4 +1,4 @@
-package techquack.com.onestar3gram.exceptions;
+package techquack.com.onestar3gram.exceptions.media;
 
 public class StorageException extends Exception {
     public StorageException(String message) {

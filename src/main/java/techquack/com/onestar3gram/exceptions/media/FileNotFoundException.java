@@ -1,4 +1,4 @@
-package techquack.com.onestar3gram.exceptions;
+package techquack.com.onestar3gram.exceptions.media;
 
 public class FileNotFoundException extends Exception {
     public FileNotFoundException(String message) {
