@@ -19,6 +19,9 @@ public enum KeycloakRoles {
 
     public static boolean hasRole(KeycloakRoles role) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!auth.isAuthenticated()) {
+            return false;
+        }
         return auth.getAuthorities().stream().anyMatch(g -> g.getAuthority().equals(role.getRole()));
     }
 }
