@@ -29,7 +29,7 @@ public class PostController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public @ResponseBody PostDTO getPost(@PathVariable(value = "id") Integer postId) throws PostNotFoundException, UnauthorizedPostException {
+    public @ResponseBody PostDTO getPost(@PathVariable(value = "id") int postId) throws PostNotFoundException, UnauthorizedPostException {
         Post post = postService.getPost(postId);
         if (post.isPrivate() && !KeycloakRoles.hasRole(KeycloakRoles.ADMIN) && !KeycloakRoles.hasRole(KeycloakRoles.PRIVILEGED)) {
             throw new UnauthorizedPostException("error - impossible to see post");
