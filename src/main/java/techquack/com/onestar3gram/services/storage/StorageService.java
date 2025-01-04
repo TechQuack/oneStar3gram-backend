@@ -2,8 +2,8 @@ package techquack.com.onestar3gram.services.storage;
 
 import org.springframework.web.multipart.MultipartFile;
 import techquack.com.onestar3gram.entities.MediaFile;
-import techquack.com.onestar3gram.exceptions.FileNotFoundException;
-import techquack.com.onestar3gram.exceptions.StorageException;
+import techquack.com.onestar3gram.exceptions.media.FileNotFoundException;
+import techquack.com.onestar3gram.exceptions.media.StorageException;
 
 import java.io.File;
 import java.io.IOException;

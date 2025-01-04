@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import techquack.com.onestar3gram.entities.MediaFile;
-import techquack.com.onestar3gram.exceptions.FileNotFoundException;
-import techquack.com.onestar3gram.exceptions.StorageException;
+import techquack.com.onestar3gram.exceptions.media.FileNotFoundException;
+import techquack.com.onestar3gram.exceptions.media.StorageException;
 import techquack.com.onestar3gram.services.storage.StorageService;
 
 import java.io.File;
