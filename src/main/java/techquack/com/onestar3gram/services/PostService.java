@@ -49,10 +49,6 @@ public class PostService {
         return postRepository.findAll().stream().filter((p) -> !p.isPrivate()).toList();
     }
 
-    public List<Post> getPrivatePosts() {
-        return postRepository.findAll().stream().filter(Post::isPrivate).toList();
-    }
-
     public List<Post> getUserPosts(String username) {
         return postRepository.findAll().stream().filter((p) -> {
             String author = adminClientService.searchByKeycloakId(p.getCreatorId()).get(0).getUsername();
@@ -67,7 +63,7 @@ public class PostService {
         }).toList();
     }
 
-    public Integer createPost(MediaFile media, String alt, String description, boolean visibility, String creatorId) {
+    public int createPost(MediaFile media, String alt, String description, boolean visibility, String creatorId) {
         Post post = new Post();
         post.setMedia(media);
         post.setAlt(alt);
@@ -103,11 +99,6 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    public boolean isPostVisible(int postId) throws PostNotFoundException {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
-        return post.isPrivate();
-    }
-
     public boolean isDescriptionInvalid(String description) {
         return description != null && description.length() > MAX_DESCRIPTION_LENGTH;
     }
@@ -133,7 +124,7 @@ public class PostService {
         dto.setId(post.getId());
         dto.setAlt(post.getAlt());
         dto.setDescription(post.getDescription());
-        dto.setPrivate(post.isPrivate());
+        dto.setIsPrivate(post.isPrivate());
         dto.setPostDate(post.getPostDate());
         dto.setMedia(post.getMedia());
         dto.setComments(getCommentsDTO(post.getComments()));
