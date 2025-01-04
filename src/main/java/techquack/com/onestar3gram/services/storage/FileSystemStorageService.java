@@ -58,8 +58,11 @@ public class FileSystemStorageService implements StorageService {
         return mediaFile;
     }
 
-    public File getFile(int id) {
+    public File getFile(int id) throws FileNotFoundException {
         MediaFile mediaFile = mediaFileRepository.findOneById(id);
+        if(mediaFile == null) {
+            throw new FileNotFoundException("This file id does not exist");
+        }
         return new File(String.valueOf(
                 this.rootLocation.resolve(Paths.get(mediaFile.getGeneratedName())))
         );
