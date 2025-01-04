@@ -27,8 +27,8 @@ public class PostExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(error);
     }
 
-    @ExceptionHandler(PostInvalidException.class)
-    public ResponseEntity<ErrorEntity> unauthorizedPostHandler(PostInvalidException exception) {
+    @ExceptionHandler(UnauthorizedPostException.class)
+    public ResponseEntity<ErrorEntity> unauthorizedPostHandler(UnauthorizedPostException exception) {
         ErrorEntity error = new ErrorEntity(LocalDateTime.now());
         error.setHttpStatus(HttpStatus.UNAUTHORIZED.value());
         error.setMessage(exception.getMessage());
