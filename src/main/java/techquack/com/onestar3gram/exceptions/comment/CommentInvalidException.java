@@ -1,8 +1,11 @@
 package techquack.com.onestar3gram.exceptions.comment;
 
-public class CommentInvalidException extends RuntimeException {
+public class CommentInvalidException extends Exception {
+    public CommentInvalidException(String message) {
+        super(message);
+    }
 
-    public CommentInvalidException() {
-        super("Comment not found");
+    public CommentInvalidException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

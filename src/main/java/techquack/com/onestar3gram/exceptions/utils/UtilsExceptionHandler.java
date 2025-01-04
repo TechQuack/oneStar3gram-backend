@@ -18,12 +18,4 @@ public class UtilsExceptionHandler extends ResponseEntityExceptionHandler {
         error.setMessage(exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
-
-    @ExceptionHandler(EmptyException.class)
-    public ResponseEntity<ErrorEntity> noContentHandler(EmptyException exception) {
-        ErrorEntity error = new ErrorEntity(LocalDateTime.now());
-        error.setHttpStatus(HttpStatus.NO_CONTENT.value());
-        error.setMessage(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(error);
-    }
 }

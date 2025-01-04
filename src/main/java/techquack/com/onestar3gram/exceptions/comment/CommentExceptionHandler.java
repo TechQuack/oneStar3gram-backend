@@ -19,4 +19,12 @@ public class CommentExceptionHandler extends ResponseEntityExceptionHandler {
         error.setMessage(exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(error);
     }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<ErrorEntity> commentNotFoundHandler(CommentNotFoundException exception) {
+        ErrorEntity error = new ErrorEntity(LocalDateTime.now());
+        error.setHttpStatus(HttpStatus.NOT_FOUND.value());
+        error.setMessage(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(error);
+    }
 }
