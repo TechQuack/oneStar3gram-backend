@@ -17,7 +17,7 @@ public interface StorageService {
 
     MediaFile getMediaFile(int id) throws FileNotFoundException;
 
-    File getFile(int id);
+    File getFile(int id) throws FileNotFoundException;
 
     List<MediaFile> getAllVideos();
 

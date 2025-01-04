@@ -1,41 +1,24 @@
 package techquack.com.onestar3gram.DTO;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class SendPostCommand {
 
+    @Setter
+    @Getter
     private int mediaId;
+
+    @Setter
+    @Getter
     private String alt;
+
+    @Setter
+    @Getter
     private String description;
-    private boolean visibility;
+    private boolean _private;
 
-    public int getMediaId() {
-        return mediaId;
-    }
+    public boolean isPrivate() { return _private; }
+    public void setPrivate(boolean aPrivate) { _private = aPrivate; }
 
-    public void setMediaId(int mediaId) {
-        this.mediaId = mediaId;
-    }
-
-    public String getAlt() {
-        return alt;
-    }
-
-    public void setAlt(String alt) {
-        this.alt = alt;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean getVisibility() {
-        return visibility;
-    }
-
-    public void setVisibility(boolean visibility) {
-        this.visibility = visibility;
-    }
 }

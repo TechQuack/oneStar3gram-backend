@@ -1,13 +1,22 @@
 package techquack.com.onestar3gram.controllers;
 
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import techquack.com.onestar3gram.DTO.MediaFileDTO;
+import techquack.com.onestar3gram.DTO.PostDTO;
 import techquack.com.onestar3gram.entities.MediaFile;
 import techquack.com.onestar3gram.exceptions.media.FileNotFoundException;
 import techquack.com.onestar3gram.exceptions.media.StorageException;
@@ -29,14 +38,34 @@ public class ImageController {
         this.storageService = storageService;
     }
 
+    @Operation(summary = "Get images")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the images",
+                    content = { @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = MediaFile.class))) }),
+    })
     @GetMapping(value = "")
-    public List<MediaFile> getImages() { return  storageService.getAllImages(); }
+    public ResponseEntity<List<MediaFile>> getImages() { return  ResponseEntity.status(HttpStatus.OK).body(storageService.getAllImages()); }
 
+    @Operation(summary = "Get image by its id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Image found",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MediaFileDTO.class)) }),
+            @ApiResponse(responseCode = "404", description = "Image was not found with this id",
+                    content = @Content)})
     @GetMapping(value = "/{id}")
-    public MediaFile getImageById(@PathVariable int id) throws FileNotFoundException {
-        return storageService.getMediaFile(id);
+    public ResponseEntity<MediaFile> getImageById(@PathVariable int id) throws FileNotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(storageService.getMediaFile(id));
     }
 
+    @Operation(summary = "Download an image")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Image downloaded",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StreamingResponseBody.class)) }),
+            @ApiResponse(responseCode = "404", description = "Image was not found with this id",
+                    content = @Content)})
     @GetMapping(value = "/download/{id}")
     public ResponseEntity<StreamingResponseBody> downloadImage(@PathVariable int id) throws FileNotFoundException {
         File file = storageService.getFile(id);
@@ -51,11 +80,30 @@ public class ImageController {
                 .body(stream);
     }
 
+    @Operation(summary = "Upload an image")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Image uploaded",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MediaFileDTO.class)) }),
+            @ApiResponse(responseCode = "500", description = "Error in storage",
+                    content = @Content)})
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public MediaFile uploadImage(@RequestParam("file") MultipartFile file) throws StorageException, IOException {
+    public ResponseEntity<MediaFile> uploadImage(@RequestParam("file") MultipartFile file) throws StorageException, IOException {
         if(!storageService.isValidImage(file)) {
             throw new StorageException("Invalid image");
         }
-        return storageService.storeImage(file);
+        return ResponseEntity.status(HttpStatus.CREATED).body(storageService.storeImage(file));
+    }
+
+    @Operation(summary = "Delete an image")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Image deleted",
+                    content = { @Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "Image was not found with this id",
+                    content = @Content)})
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteImage(@PathVariable int id) throws FileNotFoundException {
+        storageService.deleteFile(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

@@ -60,6 +60,7 @@ public class SecurityConfiguration {
             requests.requestMatchers(HttpMethod.GET,"/image/download/*").permitAll();
             requests.requestMatchers(HttpMethod.POST,"/image/upload").hasAuthority(KeycloakRoles.ADMIN.getRole());
             requests.requestMatchers(HttpMethod.GET,"/image/*").permitAll();
+            requests.requestMatchers(HttpMethod.DELETE, "/image/*").hasAuthority(KeycloakRoles.ADMIN.getRole());
             //Post:
             requests.requestMatchers(HttpMethod.GET,"/post").permitAll();
             requests.requestMatchers(HttpMethod.GET,"/post/author/*").authenticated();
