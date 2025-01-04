@@ -49,10 +49,6 @@ public class PostService {
         return postRepository.findAll().stream().filter((p) -> !p.isPrivate()).toList();
     }
 
-    public List<Post> getPrivatePosts() {
-        return postRepository.findAll().stream().filter(Post::isPrivate).toList();
-    }
-
     public List<Post> getUserPosts(String username) {
         return postRepository.findAll().stream().filter((p) -> {
             String author = adminClientService.searchByKeycloakId(p.getCreatorId()).get(0).getUsername();
@@ -101,11 +97,6 @@ public class PostService {
         postRepository.save(post);
         storageService.deleteFile(id);
         postRepository.deleteById(postId);
-    }
-
-    public boolean isPostVisible(int postId) throws PostNotFoundException {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post not found - invalid id " + postId));
-        return post.isPrivate();
     }
 
     public boolean isDescriptionInvalid(String description) {
